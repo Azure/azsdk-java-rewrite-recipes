@@ -46,14 +46,10 @@ as follows:
 The plugin configuration is defined in the `pom.xml` file [here]().
 
 ## Execution
-The `openrewrite-samples` module is configured to use the `openrewrite-maven-plugin` to run the OpenRewrite recipe on the sample project.
-```xml
-<configuration>
-    <activeRecipes>
-        <recipe>com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2</recipe>
-    </activeRecipes>
-</configuration>
-```
+The `rewrite-sample` module is configured to use the `openrewrite-maven-plugin` to run the OpenRewrite recipe on the sample project.
+The `rewrite-sample` module contains the modules `azure-ai-translation-text-v1` and `azure-ai-translation-text-v2`
+to demonstrate the migration of code from `azure-core` to `azure-core-v2`.
+
 ### Dry Run
 To run the OpenRewrite recipe in dry-run mode, execute the following command:
 ```shell

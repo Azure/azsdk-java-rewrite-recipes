@@ -15,7 +15,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <modules>
-        <module>java-samples</module>
+        <module>azure-ai-translation-text-v1</module>
+        <module>azure-ai-translation-text-v2</module>
     </modules>
     <build>
         <plugins>
