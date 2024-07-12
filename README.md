@@ -1,33 +1,82 @@
-# Project
+# Azure Code Migration with OpenRewrite
+This repository showcases the integration of OpenRewrite with Maven for code migration purposes.
+The migration recipe is defined to transition from `azure-core` to `azure-core-v2` libraries.
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+## Setup
 
-As the maintainer of this project, please make a few updates:
+The migration recipe is defined in the `java-rewrite-core` module as detailed below:
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+```yaml
+### Recipe Configuration for OpenRewrite
+type: specs.openrewrite.org/v1beta/recipe
+name: com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2
+displayName: Migrate azure-core samples to azure-core-v2
+description: This recipe migrates the samples in azure-core to azure-core-v2
+recipeList:
+  - org.openrewrite.java.ChangePackage:
+      oldPackageName: com.azure
+      newPackageName: io.clientcore
+      recursive: true
+```
+You can find the recipe configuration in the `rewrite.yml` file [here]().
 
-## Contributing
+## Usage
+### Maven Plugin Configuration
+The OpenRewrite Maven plugin is configured in the `java-rewrite-core` module to run the migration recipe on the sample project
+as follows:
+```xml
+<plugin>
+    <groupId>org.openrewrite.maven</groupId>
+    <artifactId>rewrite-maven-plugin</artifactId>
+    <version>5.7.1</version>
+    <configuration>
+        <activeRecipes>
+            <recipe>com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2</recipe>
+        </activeRecipes>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>rewrite-java-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+</plugin>
+```
+The plugin configuration is defined in the `pom.xml` file [here]().
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+## Execution
+The `openrewrite-samples` module is configured to use the `openrewrite-maven-plugin` to run the OpenRewrite recipe on the sample project.
+```xml
+<configuration>
+    <activeRecipes>
+        <recipe>com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2</recipe>
+    </activeRecipes>
+</configuration>
+```
+### Dry Run
+To run the OpenRewrite recipe in dry-run mode, execute the following command:
+```shell
+mvn rewrite:dryRun
+```
+This will generate a file `rewrite.patch` in `target/rewrite` directory.
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+### Run (apply changes)
+To actually apply the changes to the sample project, execute the following command:
+```shell
+mvn rewrite:run
+```
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+## Testing
+Refer to [Recipe Testing](https://docs.openrewrite.org/authoring-recipes/recipe-testing) for information on testing the recipe with unit tests.
 
-## Trademarks
+## Openrewrite Reference
+- [Rewrite Recipe Starter](https://github.com/moderneinc/rewrite-recipe-starter):  Template for building your own recipe JARs
+- [Best practices for writing recipes](https://docs.openrewrite.org/recipes/recipes/openrewritebestpractices)
+- [Collaboration Proposal](https://github.com/openrewrite/collaboration-proposals/issues/new/choose): collaboration with OpenRewrite
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+
+
+
+
+
