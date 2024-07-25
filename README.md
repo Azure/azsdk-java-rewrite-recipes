@@ -2,7 +2,7 @@
 This repository showcases the integration of OpenRewrite with Maven for code migration purposes.
 The migration recipe is defined to transition from `azure-core` to `azure-core-v2` libraries. 
 
-## Setup
+## Setup 
 
 The migration recipe is defined in the `java-rewrite-core` module as detailed below:
 
