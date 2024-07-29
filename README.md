@@ -20,6 +20,7 @@ recipeList:
 ```
 You can find the recipe configuration in the `rewrite.yml` file [here]().
 
+
 ## Usage
 ### Maven Plugin Configuration
 The OpenRewrite Maven plugin is configured in the `java-rewrite-core` module to run the migration recipe on the sample project
