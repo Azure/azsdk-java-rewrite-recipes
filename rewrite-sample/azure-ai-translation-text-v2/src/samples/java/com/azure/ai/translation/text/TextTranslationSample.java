@@ -8,6 +8,7 @@ import io.clientcore.core.credential.KeyCredential;
 import io.clientcore.core.http.models.HttpLogOptions;
 import io.clientcore.core.http.models.HttpRetryOptions;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +23,12 @@ public class TextTranslationSample {
                 .buildClient();
 
         List<InputTextItem> inputTextItems = Arrays.asList(new InputTextItem("hello world"));
-        List<TranslatedTextItem> result = textTranslationClient.translate(Arrays.asList("es"), inputTextItems);
+        List<TranslatedTextItem> result = null;
+        try {
+            result = textTranslationClient.translate(Arrays.asList("es"), inputTextItems);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         result.stream()
                 .flatMap(translatedTextItem -> translatedTextItem.getTranslations().stream())
