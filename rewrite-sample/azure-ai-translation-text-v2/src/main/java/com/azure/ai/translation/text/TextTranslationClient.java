@@ -28,6 +28,7 @@ import io.clientcore.core.http.models.HttpHeaderName;
 import io.clientcore.core.http.models.RequestOptions;
 import io.clientcore.core.http.models.Response;
 import io.clientcore.core.util.binarydata.BinaryData;
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -549,7 +550,7 @@ public final class TextTranslationClient {
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
     public GetSupportedLanguagesResult getSupportedLanguages(String clientTraceId, String scope, String acceptLanguage,
-        String ifNoneMatch) {
+        String ifNoneMatch) throws IOException {
         // Generated convenience method for getSupportedLanguagesWithResponse
         RequestOptions requestOptions = new RequestOptions();
         if (clientTraceId != null) {
@@ -579,7 +580,7 @@ public final class TextTranslationClient {
      */
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
-    public GetSupportedLanguagesResult getSupportedLanguages() {
+    public GetSupportedLanguagesResult getSupportedLanguages() throws IOException {
         // Generated convenience method for getSupportedLanguagesWithResponse
         RequestOptions requestOptions = new RequestOptions();
         return getSupportedLanguagesWithResponse(requestOptions).getValue().toObject(GetSupportedLanguagesResult.class);
@@ -647,7 +648,7 @@ public final class TextTranslationClient {
         String clientTraceId, String sourceLanguage, TextType textType, String category,
         ProfanityAction profanityAction, ProfanityMarker profanityMarker, Boolean includeAlignment,
         Boolean includeSentenceLength, String suggestedSourceLanguage, String sourceLanguageScript,
-        String targetLanguageScript, Boolean allowFallback) {
+        String targetLanguageScript, Boolean allowFallback) throws IOException {
         // Generated convenience method for translateWithResponse
         RequestOptions requestOptions = new RequestOptions();
         if (clientTraceId != null) {
@@ -709,7 +710,8 @@ public final class TextTranslationClient {
      */
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
-    public List<TranslatedTextItem> translate(List<String> targetLanguages, List<InputTextItem> body) {
+    public List<TranslatedTextItem> translate(List<String> targetLanguages, List<InputTextItem> body)
+        throws IOException {
         // Generated convenience method for translateWithResponse
         RequestOptions requestOptions = new RequestOptions();
         return translateWithResponse(targetLanguages, BinaryData.fromObject(body), requestOptions).getValue()
@@ -741,7 +743,7 @@ public final class TextTranslationClient {
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
     public List<TransliteratedText> transliterate(String language, String sourceLanguageScript,
-        String targetLanguageScript, List<InputTextItem> body, String clientTraceId) {
+        String targetLanguageScript, List<InputTextItem> body, String clientTraceId) throws IOException {
         // Generated convenience method for transliterateWithResponse
         RequestOptions requestOptions = new RequestOptions();
         if (clientTraceId != null) {
@@ -775,7 +777,7 @@ public final class TextTranslationClient {
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
     public List<TransliteratedText> transliterate(String language, String sourceLanguageScript,
-        String targetLanguageScript, List<InputTextItem> body) {
+        String targetLanguageScript, List<InputTextItem> body) throws IOException {
         // Generated convenience method for transliterateWithResponse
         RequestOptions requestOptions = new RequestOptions();
         return transliterateWithResponse(language, sourceLanguageScript, targetLanguageScript,
@@ -802,7 +804,7 @@ public final class TextTranslationClient {
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
     public List<BreakSentenceItem> findSentenceBoundaries(List<InputTextItem> body, String clientTraceId,
-        String language, String script) {
+        String language, String script) throws IOException {
         // Generated convenience method for findSentenceBoundariesWithResponse
         RequestOptions requestOptions = new RequestOptions();
         if (clientTraceId != null) {
@@ -832,7 +834,7 @@ public final class TextTranslationClient {
      */
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
-    public List<BreakSentenceItem> findSentenceBoundaries(List<InputTextItem> body) {
+    public List<BreakSentenceItem> findSentenceBoundaries(List<InputTextItem> body) throws IOException {
         // Generated convenience method for findSentenceBoundariesWithResponse
         RequestOptions requestOptions = new RequestOptions();
         return findSentenceBoundariesWithResponse(BinaryData.fromObject(body), requestOptions).getValue()
@@ -859,7 +861,7 @@ public final class TextTranslationClient {
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
     public List<DictionaryLookupItem> lookupDictionaryEntries(String sourceLanguage, String targetLanguage,
-        List<InputTextItem> body, String clientTraceId) {
+        List<InputTextItem> body, String clientTraceId) throws IOException {
         // Generated convenience method for lookupDictionaryEntriesWithResponse
         RequestOptions requestOptions = new RequestOptions();
         if (clientTraceId != null) {
@@ -888,7 +890,7 @@ public final class TextTranslationClient {
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
     public List<DictionaryLookupItem> lookupDictionaryEntries(String sourceLanguage, String targetLanguage,
-        List<InputTextItem> body) {
+        List<InputTextItem> body) throws IOException {
         // Generated convenience method for lookupDictionaryEntriesWithResponse
         RequestOptions requestOptions = new RequestOptions();
         return lookupDictionaryEntriesWithResponse(sourceLanguage, targetLanguage, BinaryData.fromObject(body),
@@ -915,7 +917,7 @@ public final class TextTranslationClient {
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
     public List<DictionaryExampleItem> lookupDictionaryExamples(String sourceLanguage, String targetLanguage,
-        List<DictionaryExampleTextItem> body, String clientTraceId) {
+        List<DictionaryExampleTextItem> body, String clientTraceId) throws IOException {
         // Generated convenience method for lookupDictionaryExamplesWithResponse
         RequestOptions requestOptions = new RequestOptions();
         if (clientTraceId != null) {
@@ -944,7 +946,7 @@ public final class TextTranslationClient {
     @Generated
     @ServiceMethod(returns = ReturnType.SINGLE)
     public List<DictionaryExampleItem> lookupDictionaryExamples(String sourceLanguage, String targetLanguage,
-        List<DictionaryExampleTextItem> body) {
+        List<DictionaryExampleTextItem> body) throws IOException {
         // Generated convenience method for lookupDictionaryExamplesWithResponse
         RequestOptions requestOptions = new RequestOptions();
         return lookupDictionaryExamplesWithResponse(sourceLanguage, targetLanguage, BinaryData.fromObject(body),
