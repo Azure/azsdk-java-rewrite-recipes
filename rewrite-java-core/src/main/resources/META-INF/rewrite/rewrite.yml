@@ -8,10 +8,7 @@ recipeList:
       newPackageName: io.clientcore
       recursive: true
   - org.openrewrite.text.FindAndReplace:
-      find: 'requires com.azure.core'
-      replace: 'requires com.azure.core.v2'
-      filePattern: '**/module-info.java'
-  - org.openrewrite.text.FindAndReplace:
-      find: 'requires transitive com.azure.core'
-      replace: 'requires transitive com.azure.core.v2'
+      regex: true
+      find: 'requires\s+(transitive\s+)?com\.azure\.core(?!\.v2)'
+      replace: 'requires $1com.azure.core.v2'
       filePattern: '**/module-info.java'
