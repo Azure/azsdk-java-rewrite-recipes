@@ -8,3 +8,11 @@ recipeList:
       find: 'requires\s+(transitive\s+)?com\.azure\.core(?!\.v2)'
       replace: 'requires $1com.azure.core.v2'
       filePattern: '**/module-info.java'
+  # Recipes migrating from com.azure.core.client.traits.HttpTrait (interface)
+  # to io.clientcore.core.models.traits.HttpTrait (interface)
+  # Suggested recipe: org.openrewrite.java.search.FindImplementations
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder retryOptions(..)
+      newMethodName: httpRetryOptions
+      matchOverrides: true
+  # HttpTrait recipes end
