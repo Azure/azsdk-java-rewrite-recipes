@@ -3,6 +3,7 @@ name: com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2
 displayName: Migrate azure-core samples to azure-core-v2
 description: This recipe migrates the samples in azure-core to azure-core-v2
 recipeList:
+  # Recipe to migrate com.azure.core requirements in module-info.java to com.azure.core.v2
   - org.openrewrite.text.FindAndReplace:
       regex: true
       find: 'requires\s+(transitive\s+)?com\.azure\.core(?!\.v2)'
