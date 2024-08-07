@@ -12,6 +12,7 @@ import io.clientcore.core.http.models.Response;
 import io.clientcore.core.util.Context;
 import io.clientcore.core.util.binarydata.BinaryData;
 
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
@@ -22,7 +23,7 @@ import java.util.List;
  * Sample demonstrating the use of protocol client methods to translate text.
  */
 public class TextTranslationProtocolSample {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         TextTranslationClient textTranslationClient = new TextTranslationClientBuilder()
                 .credential(new KeyCredential("<api-key>"))
