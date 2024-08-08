@@ -9,3 +9,8 @@ recipeList:
       find: 'requires\s+(transitive\s+)?com\.azure\.core(?!\.v2)'
       replace: 'requires $1com.azure.core.v2'
       filePattern: '**/module-info.java'
+  # Recipe to add http prefix to retryOptions in local class TextTranslationClientBuilder ONLY
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder retryOptions(..)
+      newMethodName: httpRetryOptions
+      matchOverrides: true
