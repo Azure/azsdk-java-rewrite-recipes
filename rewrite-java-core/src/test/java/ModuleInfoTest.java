@@ -19,7 +19,7 @@ public class ModuleInfoTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipe(new FindAndReplace("requires\\s+(transitive\\s+)?com\\.azure\\.core(?!\\.v2)",
                 "requires $1com.azure.core.v2",
-                true,false,null,null,null));
+                true,false,null,null,null,null));
     }
 
     /**
