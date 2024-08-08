@@ -23,7 +23,7 @@ import java.util.List;
  * Sample demonstrating the use of protocol client methods to translate text.
  */
 public class TextTranslationProtocolSample {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         TextTranslationClient textTranslationClient = new TextTranslationClientBuilder()
                 .credential(new KeyCredential("<api-key>"))
