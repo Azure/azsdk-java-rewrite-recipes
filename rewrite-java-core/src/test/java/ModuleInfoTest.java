@@ -60,6 +60,7 @@ public class ModuleInfoTest implements RewriteTest {
     /**
      * This test method is used to make sure no changes are applied if module-info already uses transitive com.azure.core.v2
      */
+    @Test
     void testTransitiveNoMatch() {
         rewriteRun(
                 // Define input and expected output
