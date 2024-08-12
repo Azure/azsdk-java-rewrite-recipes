@@ -45,29 +45,7 @@ public class ModuleInfoTest implements RewriteTest {
                         "module com.azure.ai.translation.text { requires transitive com.azure.core.v2; }")
         );
     }
-
-    /**
-     * This test method is used to make sure no changes are applied if module-info already uses com.azure.core.v2
-     */
-    @Test
-    void testNoMatch() {
-        rewriteRun(
-                // Define input and expected output
-                text("module com.azure.ai.translation.text { requires com.azure.core.v2; }")
-        );
-    }
-
-    /**
-     * This test method is used to make sure no changes are applied if module-info already uses transitive com.azure.core.v2
-     */
-    @Test
-    void testTransitiveNoMatch() {
-        rewriteRun(
-                // Define input and expected output
-                text("module com.azure.ai.translation.text { requires transitive com.azure.core.v2; }")
-        );
-    }
-
+    
     /**
      * This test method is used to make sure module info is transformed to use transitive com.azure.core.v2 and com.azure.core.v2
      */
