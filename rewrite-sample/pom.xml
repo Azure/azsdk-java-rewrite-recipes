@@ -27,6 +27,7 @@
                 <configuration>
                     <activeRecipes>
                         <recipe>com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2</recipe>
+                        <recipe>com.azure.recipes.v2recipes.HttpPrefixRecipe</recipe>
                     </activeRecipes>
                 </configuration>
                 <dependencies>
