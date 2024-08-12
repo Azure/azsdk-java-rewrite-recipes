@@ -23,11 +23,12 @@
             <plugin>
                 <groupId>org.openrewrite.maven</groupId>
                 <artifactId>rewrite-maven-plugin</artifactId>
-                <version>5.7.1</version>
+                <version>5.37.1</version>
                 <configuration>
                     <activeRecipes>
                         <recipe>com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2</recipe>
                         <recipe>com.azure.recipes.v2recipes.HttpPrefixRecipe</recipe>
+                        <recipe>com.azure.recipes.v2recipes.ContextRecipe</recipe>
                     </activeRecipes>
                 </configuration>
                 <dependencies>
@@ -36,6 +37,25 @@
                         <artifactId>rewrite-java-core</artifactId>
                         <version>1.0.0</version>
                     </dependency>
+                    <!-- <dependency>
+                        <groupId>org.openrewrite</groupId>
+                        <artifactId>rewrite-java</artifactId>
+                        <version>8.32.1</version>
+                        <scope>compile</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.openrewrite</groupId>
+                        <artifactId>rewrite-java-11</artifactId>
+                        <version>8.32.1</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.openrewrite</groupId>
+                        <artifactId>rewrite-maven</artifactId>
+                        <version>8.32.1</version>
+                        <scope>compile</scope>
+                    </dependency>!-->
+
                 </dependencies>
             </plugin>
         </plugins>
