@@ -8,7 +8,7 @@ import org.openrewrite.java.tree.TypeTree;
 
 /**
  * ContextRecipe changes all instances of Context.NONE (from azure core v1) to Context.none() (from azure core v2).
- * This recipe also updates the import statements for the aformentioned class.
+ * This recipe also updates the import statements for the aforementioned class.
  * @author Ali Soltanian Fard Jahromi
  */
 public class ContextRecipe extends Recipe {
@@ -48,22 +48,14 @@ public class ContextRecipe extends Recipe {
         public J.@NotNull FieldAccess visitFieldAccess(J.@NotNull FieldAccess fieldAccess, @NotNull ExecutionContext ctx) {
             J.FieldAccess fa = super.visitFieldAccess(fieldAccess, ctx);
             String fullyQualified = fa.getTarget() + "." + fa.getSimpleName();
+            
             if (fullyQualified.equals("com.azure.core.util.Context")) {
-                return TypeTree.build(" io.clientcore.util.Context");
+               return TypeTree.build(" io.clientcore.util.Context");
+            }
+            if (fullyQualified.equals("Context.NONE")){
+                return TypeTree.build("Context.none()");
             }
             return fa;
-        }
-        /**
-         * Method to change the identifier "NONE" to "none()"
-         * @return The modified identifier
-         */
-        @Override
-        public J.@NotNull Identifier visitIdentifier(J.@NotNull Identifier identifier, @NotNull ExecutionContext ctx) {
-            J.Identifier id = super.visitIdentifier(identifier, ctx);
-            if (id.getSimpleName().equals("NONE")) {
-                return id.withSimpleName("none()");
-            }
-            return id;
         }
     }
 }
