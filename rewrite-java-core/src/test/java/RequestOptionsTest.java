@@ -8,7 +8,7 @@ import static org.openrewrite.java.Assertions.java;
 
 /**
  * RequestOptionsTest is used to test out the recipe that converts com.azure.core.http.rest.RequestOptions
- * to io.clientcore.core.core.http.models.RequestOptions.
+ * to io.clientcore.core.http.models.RequestOptions.
  * @author Ali Soltanian Fard Jahromi
  */
 class RequestOptionsTest implements RewriteTest {
