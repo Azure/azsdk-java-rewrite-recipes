@@ -27,9 +27,7 @@
                 <configuration>
                     <activeRecipes>
                         <recipe>com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2</recipe>
-                        <recipe>com.azure.recipes.v2recipes.HttpPrefixRecipe</recipe>
                         <recipe>com.azure.recipes.v2recipes.ContextRecipe</recipe>
-                        <recipe>com.azure.recipes.v2recipes.RequestOptionsRecipe</recipe>
                     </activeRecipes>
                 </configuration>
                 <dependencies>
@@ -38,7 +36,7 @@
                         <artifactId>rewrite-java-core</artifactId>
                         <version>1.0.0</version>
                     </dependency>
-                    <!-- <dependency>
+                    <dependency>
                         <groupId>org.openrewrite</groupId>
                         <artifactId>rewrite-java</artifactId>
                         <version>8.32.1</version>
@@ -55,7 +53,7 @@
                         <artifactId>rewrite-maven</artifactId>
                         <version>8.32.1</version>
                         <scope>compile</scope>
-                    </dependency>!-->
+                    </dependency>
 
                 </dependencies>
             </plugin>
