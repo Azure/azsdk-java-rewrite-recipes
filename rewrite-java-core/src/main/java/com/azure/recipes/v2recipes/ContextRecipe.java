@@ -27,7 +27,7 @@ public class ContextRecipe extends Recipe {
     @Override
     public @NotNull String getDescription() {
         return "This recipe changes any calls to Context.NONE to Context.none().\n" +
-                "It also changes the import statement of com.azure.core.util.Context to io.clientcore.util.Context.";
+                "It also changes the import statement of com.azure.core.util.Context to io.clientcore.core.util.Context.";
     }
     /**
      * Method to return the visitor that visits the Context.NONE identifier
@@ -42,7 +42,7 @@ public class ContextRecipe extends Recipe {
      */
     private static class ChangeStaticFieldToMethodVisitor extends JavaIsoVisitor<ExecutionContext> {
         /**
-         * Method to change com.azure.core.util.Context to io.clientcore.util.Context
+         * Method to change com.azure.core.util.Context to io.clientcore.core.util.Context
          */
         @Override
         public J.@NotNull FieldAccess visitFieldAccess(J.@NotNull FieldAccess fieldAccess, @NotNull ExecutionContext ctx) {
@@ -50,7 +50,7 @@ public class ContextRecipe extends Recipe {
             String fullyQualified = fa.getTarget() + "." + fa.getSimpleName();
             //System.out.println(fullyQualified);
             if (fullyQualified.equals("com.azure.core.util.Context")) {
-               return TypeTree.build(" io.clientcore.util.Context");
+               return TypeTree.build(" io.clientcore.core.util.Context");
             }
             if (fullyQualified.equals("Context.NONE")){
                 return TypeTree.build("Context.none()");

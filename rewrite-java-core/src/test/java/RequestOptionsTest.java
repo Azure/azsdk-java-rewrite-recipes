@@ -20,7 +20,7 @@ class RequestOptionsTest implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
         spec.recipe(new ChangeType("com.azure.core.http.rest.RequestOptions",
-                "io.clientcore.http.models.RequestOptions", null));
+                "io.clientcore.core.http.models.RequestOptions", null));
     }
 
     /**
@@ -35,10 +35,10 @@ class RequestOptionsTest implements RewriteTest {
         before += "\n  }";
         before += "\n}";
 
-        @Language("java") String after = "import io.clientcore.http.models.RequestOptions;";
+        @Language("java") String after = "import io.clientcore.core.http.models.RequestOptions;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    io.clientcore.http.models.RequestOptions r = new RequestOptions();";
+        after += "\n    io.clientcore.core.http.models.RequestOptions r = new RequestOptions();";
         after += "\n  }";
         after += "\n}";
         rewriteRun(

@@ -32,7 +32,7 @@ class ContextTest implements RewriteTest {
         before += "\n  public Testing(){}";
         before += "\n}";
 
-        @Language("java") String after = "import io.clientcore.util.Context;";
+        @Language("java") String after = "import io.clientcore.core.util.Context;";
         after += "\npublic class Testing {";
         after += "\n  public Testing(){}";
         after += "\n}";
