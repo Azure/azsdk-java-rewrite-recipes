@@ -25,3 +25,9 @@ recipeList:
       newMethodName: addHttpPipelinePolicy
       matchOverrides: true
       # End HttpTrait recipes
+
+  # Recipe that changes all instances of com.azure.core.http.rest.Response
+  # to io.clientcore.core.http.models.Response
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.http.rest.Response
+      newFullyQualifiedTypeName: io.clientcore.core.http.models.Response
