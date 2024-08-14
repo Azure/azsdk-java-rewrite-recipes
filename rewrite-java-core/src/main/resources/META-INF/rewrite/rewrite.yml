@@ -16,11 +16,6 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.rest.RequestOptions
       newFullyQualifiedTypeName: io.clientcore.core.http.models.RequestOptions
-  # Recipe that changes all instances of com.azure.core.http.policy.RetryOptions
-  # to io.clientcore.http.models.HttpRetryOptions
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.http.policy.RetryOptions
-      newFullyQualifiedTypeName: io.clientcore.core.http.models.HttpRetryOptions
   # Recipes to migrate implementations of com.azure.core.client.traits.HttpTrait
   # to io.clientcore.core.models.traits.HttpTrait
   # Add http prefix to renamed methods

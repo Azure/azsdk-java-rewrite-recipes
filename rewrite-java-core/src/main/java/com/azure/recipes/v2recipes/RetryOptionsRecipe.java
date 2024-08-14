@@ -7,13 +7,15 @@ import org.openrewrite.TreeVisitor;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.TypeTree;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * RetryOptionsRecipe changes RetryOptions constructor to HttpRetryOptions constructor.
- * It also removes any references to FixedDelay and ExponentialDelay.
+ * It also removes any references to FixedDelay and ExponentialDelay and changes
+ * com.azure.core.http.policy.RetryOptions to io.clientcore.core.http.models.HttpRetryOptions
  * @author Ali Soltanian Fard Jahromi
  */
 public class RetryOptionsRecipe extends Recipe {
@@ -32,7 +34,8 @@ public class RetryOptionsRecipe extends Recipe {
     @Override
     public @NotNull String getDescription() {
         return "This recipe changes the constructor for RetryOptions to HttpRetryOptions.\n" +
-                "This includes removing any references to FixedDelay and ExponentialDelay.";
+                "This includes removing any references to FixedDelay and ExponentialDelay and changing\n" +
+                " * com.azure.core.http.policy.RetryOptions to io.clientcore.core.http.models.HttpRetryOptions.";
     }
     /**
      * Method to return the visitor that changes RetryOptions constructor to HttpRetryOptions constructor
@@ -69,7 +72,7 @@ public class RetryOptionsRecipe extends Recipe {
             return n;
         }
         /**
-         * Method to change constructor for RetryOptions to HttpRetryOptions
+         * Method to change constructor for RetryOptions to HttpRetryOptions and Builder api method calls to httpRetryOptions
          */
         @Override
         public J.@NotNull Identifier visitIdentifier(J.@NotNull Identifier identifier, @NotNull ExecutionContext ctx) {
@@ -77,7 +80,22 @@ public class RetryOptionsRecipe extends Recipe {
             if (id.getSimpleName().equals("RetryOptions")) {
                 return id.withSimpleName("HttpRetryOptions");
             }
+            if (id.getSimpleName().equals("retryOptions")) {
+                return id.withSimpleName("httpRetryOptions");
+            }
             return id;
+        }
+        /**
+         * Method to change imports to the correct class name
+         */
+        @Override
+        public J.@NotNull FieldAccess visitFieldAccess(J.@NotNull FieldAccess fieldAccess, @NotNull ExecutionContext ctx) {
+            J.FieldAccess fa = super.visitFieldAccess(fieldAccess, ctx);
+            String fullyQualified = fa.getTarget() + "." + fa.getSimpleName();
+            if (fullyQualified.equals("com.azure.core.http.policy.HttpRetryOptions")) {
+                return TypeTree.build(" io.clientcore.core.http.models.HttpRetryOptions");
+            }
+            return fa;
         }
     }
 }
