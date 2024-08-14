@@ -8,7 +8,8 @@ import static org.openrewrite.java.Assertions.java;
 
 /**
  * RetryOptionsTest is used to test out the recipe that removes usage of
- * FixedDelay and ExponentialDelay from the RetryOptions constructor.
+ * FixedDelay and ExponentialDelay from the RetryOptions constructor and updates
+ * it to use the new azure-core-v2 HttpRetryOptions class.
  * @author Ali Soltanian Fard Jahromi
  */
 class RetryOptionsTest implements RewriteTest {
@@ -23,7 +24,7 @@ class RetryOptionsTest implements RewriteTest {
     }
 
     /**
-     * This test method is used to make sure that the constructor for RetryOptions is updated
+     * This test method is used to make sure that RetryOptions is updated to the new constructor and class
      */
     @Test
     void testInit() {
@@ -34,10 +35,10 @@ class RetryOptionsTest implements RewriteTest {
         before += "\n  }";
         before += "\n}";
 
-        @Language("java") String after = "import com.azure.core.http.policy.RetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
+        @Language("java") String after = "import io.clientcore.core.http.models.HttpRetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
         after += "\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    com.azure.core.http.policy.RetryOptions r = new RetryOptions(3, Duration.ofMillis(50));";
+        after += "\n     io.clientcore.core.http.models.HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
         after += "\n  }";
         after += "\n}";
         rewriteRun(
