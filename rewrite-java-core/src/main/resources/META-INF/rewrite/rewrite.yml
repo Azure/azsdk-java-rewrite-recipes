@@ -38,3 +38,27 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.rest.Response
       newFullyQualifiedTypeName: io.clientcore.core.http.models.Response
+
+  # Recipe that changes all instances of com.azure.core.annotation.ServiceClient
+  # to com.azure.core.v2.annotation.ServiceClient
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceClient
+      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceClient
+
+  # Recipe that changes all instances of com.azure.core.annotation.ServiceClientBuilder
+  # to com.azure.core.v2.annotation.ServiceClientBuilder
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceClientBuilder
+      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceClientBuilder
+
+  # Recipe that changes all instances of com.azure.core.annotation.ServiceInterface
+  # to io.clientcore.core.annotation.ServiceInterface
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceInterface
+      newFullyQualifiedTypeName: io.clientcore.core.annotation.ServiceInterface
+
+  # Recipe that changes all instances of com.azure.core.annotation.ServiceMethod
+  # to com.azure.core.v2.annotation.ServiceMethod
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceMethod
+      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceMethod
