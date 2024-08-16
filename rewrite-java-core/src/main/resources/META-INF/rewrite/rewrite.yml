@@ -38,3 +38,27 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.rest.Response
       newFullyQualifiedTypeName: io.clientcore.core.http.models.Response
+
+  # Recipe that changes all instances of com.azure.core.annotation.HostParam
+  # to io.clientcore.core.http.annotation.HostParam
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.HostParam
+      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.HostParam
+
+  # Recipe that changes all instances of com.azure.core.annotation.HeaderParam
+  # to io.clientcore.core.http.annotation.HeaderParam
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.HeaderParam
+      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.HeaderParam
+
+  # Recipe that changes all instances of com.azure.core.annotation.BodyParam
+  # to io.clientcore.core.http.annotation.BodyParam
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.BodyParam
+      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.BodyParam
+
+  # Recipe that changes all instances of com.azure.core.annotation.QueryParam
+  # to io.clientcore.core.http.annotation.QueryParam
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.QueryParam
+      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.QueryParam
