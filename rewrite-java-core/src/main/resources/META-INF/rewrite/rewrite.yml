@@ -3,6 +3,91 @@ name: com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2
 displayName: Migrate azure-core samples to azure-core-v2
 description: This recipe migrates the samples in azure-core to azure-core-v2
 recipeList:
+  # Ignore module-info.java for now until OpenRewrite implements support for it
+  # Recipe to migrate com.azure.core requirements in module-info.java to com.azure.core.v2
+  #- org.openrewrite.text.FindAndReplace:
+  #    regex: true
+  #    find: 'requires\s+(transitive\s+)?com\.azure\.core(?!\.v2)'
+  #    replace: 'requires $1com.azure.core.v2'
+  #    filePattern: '**/module-info.java'
+  #
+  # Recipe that changes all instances of com.azure.core.http.rest.RequestOptions
+  # to io.clientcore.core.http.models.RequestOptions
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.http.rest.RequestOptions
+      newFullyQualifiedTypeName: io.clientcore.core.http.models.RequestOptions
+
+  # Recipe that changes all instances of com.azure.core.http.rest.Response
+  # to io.clientcore.core.http.models.Response
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.http.rest.Response
+      newFullyQualifiedTypeName: io.clientcore.core.http.models.Response
+
+  # Recipe that changes all instances of com.azure.core.annotation.HostParam
+  # to io.clientcore.core.http.annotation.HostParam
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.HostParam
+      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.HostParam
+
+  # Recipe that changes all instances of com.azure.core.annotation.HeaderParam
+  # to io.clientcore.core.http.annotation.HeaderParam
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.HeaderParam
+      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.HeaderParam
+
+  # Recipe that changes all instances of com.azure.core.annotation.BodyParam
+  # to io.clientcore.core.http.annotation.BodyParam
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.BodyParam
+      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.BodyParam
+
+  # Recipe that changes all instances of com.azure.core.annotation.QueryParam
+  # to io.clientcore.core.http.annotation.QueryParam
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.QueryParam
+      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.QueryParam
+
+  # Recipe that changes all instances of com.azure.core.annotation.ServiceClient
+  # to com.azure.core.v2.annotation.ServiceClient
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceClient
+      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceClient
+
+  # Recipe that changes all instances of com.azure.core.annotation.ServiceClientBuilder
+  # to com.azure.core.v2.annotation.ServiceClientBuilder
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceClientBuilder
+      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceClientBuilder
+
+  # Recipe that changes all instances of com.azure.core.annotation.ServiceInterface
+  # to io.clientcore.core.annotation.ServiceInterface
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceInterface
+      newFullyQualifiedTypeName: io.clientcore.core.annotation.ServiceInterface
+
+  # Recipe that changes all instances of com.azure.core.annotation.ServiceMethod
+  # to com.azure.core.v2.annotation.ServiceMethod
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceMethod
+      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceMethod
+
+  # Recipes to migrate implementations of com.azure.core.client.traits.HttpTrait
+  # to io.clientcore.core.models.traits.HttpTrait
+  # Add http prefix to renamed methods
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.azure.core.client.traits.HttpTrait retryOptions(..)
+      newMethodName: httpRetryOptions
+      matchOverrides: true
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.azure.core.client.traits.HttpTrait pipeline(..)
+      newMethodName: httpPipeline
+      matchOverrides: true
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.azure.core.client.traits.HttpTrait addPolicy(..)
+      newMethodName: addHttpPipelinePolicy
+      matchOverrides: true
+      # End HttpTrait recipes
+  # Recipe to change com.azure.core.credential package name to io.clientcore.core.credential
   - org.openrewrite.java.ChangePackage:
         oldPackageName: com.azure.core.credential
         newPackageName: io.clientcore.core.credential
