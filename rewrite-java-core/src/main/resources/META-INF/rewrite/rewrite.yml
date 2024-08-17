@@ -4,5 +4,5 @@ displayName: Migrate azure-core samples to azure-core-v2
 description: This recipe migrates the samples in azure-core to azure-core-v2
 recipeList:
   - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.util.Context
-      newFullyQualifiedTypeName: io.clientcore.util.Context
+      oldFullyQualifiedTypeName: com.azure.core.credential
+      newFullyQualifiedTypeName: io.clientcore.core.credential
