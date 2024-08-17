@@ -87,3 +87,7 @@ recipeList:
       newMethodName: addHttpPipelinePolicy
       matchOverrides: true
       # End HttpTrait recipes
+  # Recipe to change com.azure.core.credential package name to io.clientcore.core.credential
+  - org.openrewrite.java.ChangePackage:
+        oldPackageName: com.azure.core.credential
+        newPackageName: io.clientcore.core.credential
