@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Tue Jul 30 12:15:34 PDT 2024
+clientcore-parent-1.0.0-beta.1-changelog.md>=
+clientcore-parent-1.0.0-beta.1-readme.md>=
+clientcore-parent-1.0.0-beta.1.pom>=
