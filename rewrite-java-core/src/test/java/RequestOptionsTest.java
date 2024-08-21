@@ -11,7 +11,7 @@ import static org.openrewrite.java.Assertions.java;
  * to io.clientcore.core.http.models.RequestOptions.
  * @author Ali Soltanian Fard Jahromi
  */
-class RequestOptionsTest implements RewriteTest {
+public class RequestOptionsTest implements RewriteTest {
 
     /**
      * This method sets which recipe should be used for testing
@@ -19,8 +19,8 @@ class RequestOptionsTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new ChangeType("com.azure.core.http.rest.RequestOptions",
-                "io.clientcore.core.http.models.RequestOptions", null));
+        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
+                "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
 
     /**
