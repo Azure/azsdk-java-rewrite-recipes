@@ -12,7 +12,7 @@ import static org.openrewrite.java.Assertions.java;
  * it to use the new azure-core-v2 HttpRetryOptions class.
  * @author Ali Soltanian Fard Jahromi
  */
-class RetryOptionsTest implements RewriteTest {
+public class RetryOptionsTest implements RewriteTest {
 
     /**
      * This method sets which recipe should be used for testing
@@ -27,7 +27,7 @@ class RetryOptionsTest implements RewriteTest {
      * This test method is used to make sure that RetryOptions is updated to the new constructor and class
      */
     @Test
-    void testInit() {
+    void testChangeRetryOptionsType() {
         @Language("java") String before = "import com.azure.core.http.policy.RetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
