@@ -49,49 +49,42 @@ recipeList:
 
   # Recipe that changes all instances of com.azure.core.annotation.ServiceClient
   # to com.azure.core.v2.annotation.ServiceClient
-  # TODO: Add unit test for this recipe
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceClient
       newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceClient
 
   # Recipe that changes all instances of com.azure.core.annotation.ServiceClientBuilder
   # to com.azure.core.v2.annotation.ServiceClientBuilder
-  # TODO: Add unit test for this recipe
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceClientBuilder
       newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceClientBuilder
 
   # Recipe that changes all instances of com.azure.core.annotation.ServiceInterface
   # to io.clientcore.core.annotation.ServiceInterface
-  # TODO: Add unit test for this recipe
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceInterface
       newFullyQualifiedTypeName: io.clientcore.core.annotation.ServiceInterface
 
   # Recipe that changes all instances of com.azure.core.annotation.ServiceMethod
   # to com.azure.core.v2.annotation.ServiceMethod
-  # TODO: Add unit test for this recipe
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceMethod
       newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceMethod
 
   # Recipe that changes all instances of com.azure.core.annotation.Generated
   # to com.azure.core.v2.annotation.Generated
-  # TODO: Add unit test for this recipe
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.annotation.Generated
       newFullyQualifiedTypeName: com.azure.core.v2.annotation.Generated
 
   # Recipe that changes all instances of com.azure.core.annotation.Immutable
   # to com.azure.core.v2.annotation.Immutable
-  # TODO: Add unit test for this recipe
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.annotation.Immutable
       newFullyQualifiedTypeName: com.azure.core.v2.annotation.Immutable
 
   # Recipe that changes all instances of com.azure.core.annotation.ReturnType
   # to com.azure.core.v2.annotation.ReturnType
-  # TODO: Add unit test for this recipe
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.annotation.ReturnType
       newFullyQualifiedTypeName: com.azure.core.v2.annotation.ReturnType
