@@ -12,7 +12,7 @@ import static org.openrewrite.java.Assertions.java;
  * io.clientcore.core.http.models.response.
  * @author Ali Soltanian Fard Jahromi
  */
-class ResponseTest implements RewriteTest {
+public class ResponseTest implements RewriteTest {
 
     /**
      * This method sets which recipe should be used for testing
@@ -20,20 +20,20 @@ class ResponseTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new ChangeType("com.azure.core.http.rest.Response",
-                "io.clientcore.core.http.models.Response", null));
+        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
+                "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
 
     /**
      * This test method is used to make sure that the Response type is updated to the new version
      */
     @Test
-    void testInit() {
+    void testUpdateResponseTypeAndImport() {
         @Language("java") String before = "import com.azure.core.http.rest.Response;\n" +
                 "import com.azure.core.util.BinaryData;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    Response<BinaryData> bdr = null;";
+        before += "\n    com.azure.core.http.rest.Response<BinaryData> bdr = null;";
         before += "\n  }";
         before += "\n}";
 
@@ -41,7 +41,7 @@ class ResponseTest implements RewriteTest {
                 + "import io.clientcore.core.http.models.Response;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    Response<BinaryData> bdr = null;";
+        after += "\n    io.clientcore.core.http.models.Response<BinaryData> bdr = null;";
         after += "\n  }";
         after += "\n}";
         rewriteRun(

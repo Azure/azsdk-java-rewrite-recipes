@@ -11,7 +11,7 @@ import static org.openrewrite.java.Assertions.java;
  * new clientcore Context class.
  * @author Ali Soltanian Fard Jahromi
  */
-class ContextTest implements RewriteTest {
+public class ContextTest implements RewriteTest {
 
     /**
      * This method sets which recipe should be used for testing
@@ -26,7 +26,7 @@ class ContextTest implements RewriteTest {
      * This test method is used to make sure that the Context class is updated
      */
     @Test
-    void testContext() {
+    void testImportReplaceContext() {
         @Language("java") String before = "import com.azure.core.util.Context;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){}";

@@ -18,7 +18,7 @@ public class ContextRecipe extends Recipe {
      */
     @Override
     public @NotNull String getDisplayName() {
-        return "Change Static Field 'Context.NONE' to Method 'Context.none()'";
+        return "Change static field 'Context.NONE' to Method 'Context.none()'";
     }
     /**
      * Method to return a description of ContextRecipe
@@ -46,16 +46,15 @@ public class ContextRecipe extends Recipe {
          */
         @Override
         public J.@NotNull FieldAccess visitFieldAccess(J.@NotNull FieldAccess fieldAccess, @NotNull ExecutionContext ctx) {
-            J.FieldAccess fa = super.visitFieldAccess(fieldAccess, ctx);
-            String fullyQualified = fa.getTarget() + "." + fa.getSimpleName();
-            //System.out.println(fullyQualified);
+            J.FieldAccess visitedFieldAccess = super.visitFieldAccess(fieldAccess, ctx);
+            String fullyQualified = visitedFieldAccess.getTarget() + "." + visitedFieldAccess.getSimpleName();
             if (fullyQualified.equals("com.azure.core.util.Context")) {
                return TypeTree.build(" io.clientcore.core.util.Context");
             }
             if (fullyQualified.equals("Context.NONE")){
                 return TypeTree.build("Context.none()");
             }
-            return fa;
+            return visitedFieldAccess;
         }
     }
 }
