@@ -11,7 +11,8 @@ import org.openrewrite.java.tree.TypeTree;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.HashMap;
+import java.util.Map;
 /**
  * RetryOptionsRecipe changes RetryOptions constructor to HttpRetryOptions constructor.
  * It also removes any references to FixedDelay and ExponentialDelay and changes
@@ -49,30 +50,55 @@ public class RetryOptionsConstructorRecipe extends Recipe {
      * Visitor to change RetryOptions constructor to HttpRetryOptions constructor
      */
     private static class RetryVisitor extends JavaIsoVisitor<ExecutionContext> {
+
+        private final Map<String, List<Expression>> variableToArgsMap = new HashMap<>();
+
         /**
-         * Method to change constructor for HttpRetryOptions to not use FixedDelay or ExponentialDelay
+         * Method to visit variable declaration for FixedDelay or ExponentialDelay
+         */
+        @Override
+        public J.VariableDeclarations visitVariableDeclarations(J.VariableDeclarations variableDeclarations, ExecutionContext executionContext) {
+            J.VariableDeclarations vd = super.visitVariableDeclarations(variableDeclarations, executionContext);
+            for (J.VariableDeclarations.NamedVariable variable : vd.getVariables()) {
+                J.NewClass newClass = (J.NewClass) variable.getInitializer();
+                if (newClass != null) {
+                    String className = newClass.getType().toString();
+                    if (className.contains("FixedDelayOptions") || className.contains("ExponentialDelayOptions")) {
+                        List<Expression> args = new ArrayList<>(newClass.getArguments());
+                        variableToArgsMap.put(variable.getSimpleName(), args);
+                    }
+                }
+            }
+            return vd;
+        }
+
+        /**
+         * Method to visit constructor for RetryOptions
          */
         @Override
         public J.NewClass visitNewClass(J.NewClass newClass, ExecutionContext executionContext) {
             J.NewClass visitedNewClass = super.visitNewClass(newClass, executionContext);
-            if(visitedNewClass.toString().contains("new HttpRetryOptions")){
-                // If number of arguments is 1, that means either FixedDelay or ExponentialDelay is being used
-                if (visitedNewClass.getArguments().size() == 1){
-                    List<Expression> args = new ArrayList<>();
-                    // Gets arguments from FixedDelay or ExponentialDelay constructor and adds it to HttpRetry constructor
-                    for (Expression e:
-                            ((J.NewClass)visitedNewClass.getArguments().getFirst()).getArguments()) {
-                        args.add(e.unwrap());
+            if (visitedNewClass.toString().contains("new HttpRetryOptions")) {
+                if (visitedNewClass.getArguments().size() == 1) {
+                    Expression constructorArg = visitedNewClass.getArguments().get(0);
+                    if (constructorArg instanceof J.Identifier) {
+                        String variableName = ((J.Identifier) constructorArg).getSimpleName();
+                        List<Expression> args = variableToArgsMap.get(variableName);
+                        if (args != null) {
+                            return visitedNewClass.withArguments(args);
+                        }
+                    } else if (constructorArg instanceof J.NewClass) {
+                        J.NewClass newArg = (J.NewClass) constructorArg;
+                        List<Expression> args = new ArrayList<>(newArg.getArguments());
+                        return visitedNewClass.withArguments(args);
                     }
-                    J.NewClass modified = visitedNewClass.withArguments(args);
-                    return modified;
                 }
-                return visitedNewClass;
             }
             return visitedNewClass;
         }
+
         /**
-         * Method to change constructor for RetryOptions to HttpRetryOptions and Builder api method calls to httpRetryOptions
+         * Method to change RetryOptions to HttpRetryOptions
          */
         @Override
         public J.@NotNull Identifier visitIdentifier(J.@NotNull Identifier identifier, @NotNull ExecutionContext ctx) {
@@ -85,8 +111,9 @@ public class RetryOptionsConstructorRecipe extends Recipe {
             }
             return visitedIdentifier;
         }
+
         /**
-         * Method to change imports to the correct class name
+         * Method to change import to HttpRetryOptions
          */
         @Override
         public J.@NotNull FieldAccess visitFieldAccess(J.@NotNull FieldAccess fieldAccess, @NotNull ExecutionContext ctx) {

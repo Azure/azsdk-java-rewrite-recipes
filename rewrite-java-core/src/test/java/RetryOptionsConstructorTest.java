@@ -12,7 +12,7 @@ import static org.openrewrite.java.Assertions.java;
  * it to use the new azure-core-v2 HttpRetryOptions class.
  * @author Ali Soltanian Fard Jahromi
  */
-public class RetryOptionsTest implements RewriteTest {
+public class RetryOptionsConstructorTest implements RewriteTest {
 
     /**
      * This method sets which recipe should be used for testing
@@ -37,6 +37,33 @@ public class RetryOptionsTest implements RewriteTest {
 
         @Language("java") String after = "import io.clientcore.core.http.models.HttpRetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
         after += "\npublic class Testing {";
+        after += "\n  public Testing(){";
+        after += "\n     io.clientcore.core.http.models.HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
+        after += "\n  }";
+        after += "\n}";
+        rewriteRun(
+                java(before,after)
+        );
+    }
+
+    /**
+     * This test method is used to make sure that RetryOptions is updated to the new constructor and class
+     * if the FixedDelayOptions is passed as a variable and not a direct instantiation in the constructor of
+     * the RetryOptions.
+     */
+    @Test
+    void testChangeRetryOptionsTypeNoArgInit() {
+        @Language("java") String before = "import com.azure.core.http.policy.RetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
+        before += "\npublic class Testing {";
+        before += "\n  FixedDelayOptions f = new FixedDelayOptions(3, Duration.ofMillis(50));";
+        before += "\n  public Testing(){";
+        before += "\n    com.azure.core.http.policy.RetryOptions r = new RetryOptions(f);";
+        before += "\n  }";
+        before += "\n}";
+
+        @Language("java") String after = "import io.clientcore.core.http.models.HttpRetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
+        after += "\npublic class Testing {";
+        after += "\n  FixedDelayOptions f = new FixedDelayOptions(3, Duration.ofMillis(50));";
         after += "\n  public Testing(){";
         after += "\n     io.clientcore.core.http.models.HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
         after += "\n  }";
