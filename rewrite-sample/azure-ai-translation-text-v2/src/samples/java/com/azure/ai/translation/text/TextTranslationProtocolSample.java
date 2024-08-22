@@ -38,23 +38,27 @@ public class TextTranslationProtocolSample {
         RequestOptions requestOptions = new RequestOptions().setContext(Context.none());
 
         Response<BinaryData> binaryDataResponse = textTranslationClient.translateWithResponse(targetLanguages, requestBody, requestOptions);
+        List<TranslatedTextItem> result = null;
+        try {
+            result = binaryDataResponse.getValue().toObject(new ParameterizedType() {
+                @Override
+                public Type getRawType() {
+                    return List.class;
+                }
 
-        List<TranslatedTextItem> result = binaryDataResponse.getValue().toObject(new ParameterizedType() {
-            @Override
-            public Type getRawType() {
-                return List.class;
-            }
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return new Type[]{TranslatedTextItem.class};
+                }
 
-            @Override
-            public Type[] getActualTypeArguments() {
-                return new Type[] { TranslatedTextItem.class };
-            }
-
-            @Override
-            public Type getOwnerType() {
-                return null;
-            }
-        });
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         result.stream()
                 .flatMap(translatedTextItem -> translatedTextItem.getTranslations().stream())
