@@ -1,4 +1,4 @@
-import com.azure.recipes.v2recipes.RetryOptionsRecipe;
+import com.azure.recipes.v2recipes.RetryOptionsConstructorRecipe;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
@@ -20,7 +20,7 @@ public class RetryOptionsTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new RetryOptionsRecipe());
+        spec.recipe(new RetryOptionsConstructorRecipe());
     }
 
     /**

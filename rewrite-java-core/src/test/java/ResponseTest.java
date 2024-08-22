@@ -28,12 +28,12 @@ public class ResponseTest implements RewriteTest {
      * This test method is used to make sure that the Response type is updated to the new version
      */
     @Test
-    void testUpdateResponseImport() {
+    void testUpdateResponseTypeAndImport() {
         @Language("java") String before = "import com.azure.core.http.rest.Response;\n" +
                 "import com.azure.core.util.BinaryData;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    Response<BinaryData> bdr = null;";
+        before += "\n    com.azure.core.http.rest.Response<BinaryData> bdr = null;";
         before += "\n  }";
         before += "\n}";
 
@@ -41,7 +41,7 @@ public class ResponseTest implements RewriteTest {
                 + "import io.clientcore.core.http.models.Response;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    Response<BinaryData> bdr = null;";
+        after += "\n    io.clientcore.core.http.models.Response<BinaryData> bdr = null;";
         after += "\n  }";
         after += "\n}";
         rewriteRun(

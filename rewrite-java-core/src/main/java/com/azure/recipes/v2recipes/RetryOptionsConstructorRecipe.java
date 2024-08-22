@@ -18,7 +18,7 @@ import java.util.List;
  * com.azure.core.http.policy.RetryOptions to io.clientcore.core.http.models.HttpRetryOptions
  * @author Ali Soltanian Fard Jahromi
  */
-public class RetryOptionsRecipe extends Recipe {
+public class RetryOptionsConstructorRecipe extends Recipe {
     /**
      * Method to return a simple short description of RetryOptionsRecipe
      * @return A simple short description/name of the recipe
@@ -54,48 +54,48 @@ public class RetryOptionsRecipe extends Recipe {
          */
         @Override
         public J.NewClass visitNewClass(J.NewClass newClass, ExecutionContext executionContext) {
-            J.NewClass n = super.visitNewClass(newClass, executionContext);
-            if(n.toString().contains("new HttpRetryOptions")){
+            J.NewClass visitedNewClass = super.visitNewClass(newClass, executionContext);
+            if(visitedNewClass.toString().contains("new HttpRetryOptions")){
                 // If number of arguments is 1, that means either FixedDelay or ExponentialDelay is being used
-                if (n.getArguments().size() == 1){
+                if (visitedNewClass.getArguments().size() == 1){
                     List<Expression> args = new ArrayList<>();
                     // Gets arguments from FixedDelay or ExponentialDelay constructor and adds it to HttpRetry constructor
                     for (Expression e:
-                            ((J.NewClass)n.getArguments().getFirst()).getArguments()) {
+                            ((J.NewClass)visitedNewClass.getArguments().getFirst()).getArguments()) {
                         args.add(e.unwrap());
                     }
-                    J.NewClass modified = n.withArguments(args);
+                    J.NewClass modified = visitedNewClass.withArguments(args);
                     return modified;
                 }
-                return n;
+                return visitedNewClass;
             }
-            return n;
+            return visitedNewClass;
         }
         /**
          * Method to change constructor for RetryOptions to HttpRetryOptions and Builder api method calls to httpRetryOptions
          */
         @Override
         public J.@NotNull Identifier visitIdentifier(J.@NotNull Identifier identifier, @NotNull ExecutionContext ctx) {
-            J.Identifier id = super.visitIdentifier(identifier, ctx);
-            if (id.getSimpleName().equals("RetryOptions")) {
-                return id.withSimpleName("HttpRetryOptions");
+            J.Identifier visitedIdentifier = super.visitIdentifier(identifier, ctx);
+            if (visitedIdentifier.getSimpleName().equals("RetryOptions")) {
+                return visitedIdentifier.withSimpleName("HttpRetryOptions");
             }
-            if (id.getSimpleName().equals("retryOptions")) {
-                return id.withSimpleName("httpRetryOptions");
+            if (visitedIdentifier.getSimpleName().equals("retryOptions")) {
+                return visitedIdentifier.withSimpleName("httpRetryOptions");
             }
-            return id;
+            return visitedIdentifier;
         }
         /**
          * Method to change imports to the correct class name
          */
         @Override
         public J.@NotNull FieldAccess visitFieldAccess(J.@NotNull FieldAccess fieldAccess, @NotNull ExecutionContext ctx) {
-            J.FieldAccess fa = super.visitFieldAccess(fieldAccess, ctx);
-            String fullyQualified = fa.getTarget() + "." + fa.getSimpleName();
+            J.FieldAccess visitedFieldAccess = super.visitFieldAccess(fieldAccess, ctx);
+            String fullyQualified = visitedFieldAccess.getTarget() + "." + visitedFieldAccess.getSimpleName();
             if (fullyQualified.equals("com.azure.core.http.policy.HttpRetryOptions")) {
                 return TypeTree.build(" io.clientcore.core.http.models.HttpRetryOptions");
             }
-            return fa;
+            return visitedFieldAccess;
         }
     }
 }

@@ -27,7 +27,7 @@ public class RequestOptionsTest implements RewriteTest {
      * This test method is used to make sure that the class type and import for RequestOptions is updated
      */
     @Test
-    void testInit() {
+    void testChangeRequestImportAndType() {
         @Language("java") String before = "import com.azure.core.http.rest.RequestOptions;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
