@@ -11,7 +11,7 @@ import static org.openrewrite.java.Assertions.java;
  * to io.clientcore.core.credential.
  * @author Ali Soltanian Fard Jahromi
  */
-class CredentialTest implements RewriteTest {
+public class CredentialTest implements RewriteTest {
 
     /**
      * This method sets which recipe should be used for testing
@@ -19,15 +19,15 @@ class CredentialTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new ChangePackage("com.azure.core.credential",
-                "io.clientcore.core.credential", null));
+        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
+                "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
 
     /**
      * This test method is used to make sure that the package com.azure.core.credential is changed
      */
     @Test
-    void testPackageNameChange() {
+    void testCredentialPackageNameChange() {
         @Language("java") String before = "import com.azure.core.credential.KeyCredential;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";

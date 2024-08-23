@@ -25,28 +25,8 @@ public class ServiceAnnotationsTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipes(
-                new ChangeType("com.azure.core.annotation.ServiceClient",
-                        "com.azure.core.v2.annotation.ServiceClient", null),
-
-                new ChangeType("com.azure.core.annotation.ServiceClientBuilder",
-                        "com.azure.core.v2.annotation.ServiceClientBuilder", null),
-
-                new ChangeType("com.azure.core.annotation.ServiceInterface",
-                        "io.clientcore.core.annotation.ServiceInterface", null),
-
-                new ChangeType("com.azure.core.annotation.ServiceMethod",
-                        "com.azure.core.v2.annotation.ServiceMethod", null),
-
-                new ChangeType("com.azure.core.annotation.Generated",
-                        "com.azure.core.v2.annotation.Generated", null),
-
-                new ChangeType("com.azure.core.annotation.Immutable",
-                        "com.azure.core.v2.annotation.Immutable", null),
-
-                new ChangeType("com.azure.core.annotation.ReturnType",
-                        "com.azure.core.v2.annotation.ReturnType",null)
-        );
+        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
+                "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
 
     /**

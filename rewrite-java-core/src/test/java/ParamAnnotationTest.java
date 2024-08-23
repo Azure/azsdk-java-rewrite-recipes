@@ -11,56 +11,87 @@ import static org.openrewrite.java.Assertions.java;
  * , @BodyParam and @QueryParam annotations.
  * @author Ali Soltanian Fard Jahromi
  */
-class ParamAnnotationTest implements RewriteTest {
+public class ParamAnnotationTest implements RewriteTest {
     /**
      * This method sets which recipe should be used for testing
      * @param spec stores settings for testing environment; e.g. which recipes to use for testing
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipes(new ChangeType("com.azure.core.annotation.HostParam",
-                "io.clientcore.core.http.annotation.HostParam", null),
-
-                new ChangeType("com.azure.core.annotation.HeaderParam",
-                        "io.clientcore.core.http.annotation.HeaderParam", null),
-
-                new ChangeType("com.azure.core.annotation.QueryParam",
-                        "io.clientcore.core.http.annotation.QueryParam", null),
-
-                new ChangeType("com.azure.core.annotation.BodyParam",
-                        "io.clientcore.core.http.annotation.BodyParam", null));
+        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
+                "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
 
     /**
-     * This test method is used to make sure that the annotation types are changed correctly
-     */
+     * This method tests to make sure the @HostParam annotation type is changed
+     * */
     @Test
-    void testParam() {
-        @Language("java") String before = "import com.azure.core.annotation.HostParam;" +
-                "\nimport com.azure.core.annotation.BodyParam;" +
-                "\nimport com.azure.core.util.Context;" +
-                "\nimport com.azure.core.util.BinaryData;" +
-                "\nimport com.azure.core.annotation.QueryParam;" +
-                "\nimport com.azure.core.annotation.HeaderParam;" +
-                "\nimport com.azure.core.http.rest.RequestOptions;";
+    void testHostParam() {
+        @Language("java") String before = "import com.azure.core.annotation.HostParam;\n" +
+                "@HostParam(host = HostParam.class)\n";
         before += "\npublic class Testing {";
-        before += "\n  ";
-        before += "\n    Response<BinaryData> getSupportedLanguagesSync(@BodyParam(\"application/json\") BinaryData body, @HostParam(\"Endpoint\") String endpoint, @QueryParam(\"api-version\") String apiVersion, @HeaderParam(\"accept\") String accept, RequestOptions requestOptions, Context context);";
-        before += "\n  ";
         before += "\n}";
 
-        @Language("java") String after =
-                "\nimport com.azure.core.util.Context;" +
-                "\nimport io.clientcore.core.http.annotation.BodyParam;" +
-                "\nimport io.clientcore.core.http.annotation.HeaderParam;" +
-                "\nimport io.clientcore.core.http.annotation.HostParam;" +
-                "\nimport io.clientcore.core.http.annotation.QueryParam;" +
-                "\nimport com.azure.core.util.BinaryData;" +
-                "\nimport com.azure.core.http.rest.RequestOptions;";
-        after += "\n\npublic class Testing {";
-        after += "\n  ";
-        after += "\n    Response<BinaryData> getSupportedLanguagesSync(@BodyParam(\"application/json\") BinaryData body, @HostParam(\"Endpoint\") String endpoint, @QueryParam(\"api-version\") String apiVersion, @HeaderParam(\"accept\") String accept, RequestOptions requestOptions, Context context);";
-        after += "\n  ";
+        @Language("java") String after = "import io.clientcore.core.http.annotation.HostParam;\n\n" +
+                "@HostParam(host = HostParam.class)\n";
+        after += "\npublic class Testing {";
+        after += "\n}";
+        rewriteRun(
+                java(before,after)
+        );
+    }
+
+    /**
+     * This method tests to make sure the @HeaderParam annotation type is changed
+     * */
+    @Test
+    void testHeaderParam() {
+        @Language("java") String before = "import com.azure.core.annotation.HeaderParam;\n" +
+                "@HeaderParam(header = HeaderParam.class)\n";
+        before += "\npublic class Testing {";
+        before += "\n}";
+
+        @Language("java") String after = "import io.clientcore.core.http.annotation.HeaderParam;\n\n" +
+                "@HeaderParam(header = HeaderParam.class)\n";
+        after += "\npublic class Testing {";
+        after += "\n}";
+        rewriteRun(
+                java(before,after)
+        );
+    }
+
+    /**
+     * This method tests to make sure the @BodyParam annotation type is changed
+     * */
+    @Test
+    void testBodyParam() {
+        @Language("java") String before = "import com.azure.core.annotation.BodyParam;\n" +
+                "@BodyParam(body = BodyParam.class)\n";
+        before += "\npublic class Testing {";
+        before += "\n}";
+
+        @Language("java") String after = "import io.clientcore.core.http.annotation.BodyParam;\n\n" +
+                        "@BodyParam(body = BodyParam.class)\n";
+        after += "\npublic class Testing {";
+        after += "\n}";
+        rewriteRun(
+                java(before,after)
+        );
+    }
+
+    /**
+     * This method tests to make sure the @QueryParam annotation type is changed
+     * */
+    @Test
+    void testQueryParam() {
+        @Language("java") String before = "import com.azure.core.annotation.QueryParam;\n" +
+                "@QueryParam(query = QueryParam.class)\n";
+        before += "\npublic class Testing {";
+        before += "\n}";
+
+        @Language("java") String after = "import io.clientcore.core.http.annotation.QueryParam;\n\n" +
+                "@QueryParam(query = QueryParam.class)\n";
+        after += "\npublic class Testing {";
         after += "\n}";
         rewriteRun(
                 java(before,after)
