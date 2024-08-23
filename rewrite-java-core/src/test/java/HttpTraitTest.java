@@ -21,15 +21,8 @@ public class HttpTraitTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipes(new ChangeMethodName("com.azure.core.client.traits.HttpTrait retryOptions(..)",
-                "httpRetryOptions",
-                true, false),
-                new ChangeMethodName("com.azure.core.client.traits.HttpTrait pipeline(..)",
-                        "httpPipeline",
-                        true, false),
-                new ChangeMethodName("com.azure.core.client.traits.HttpTrait addPolicy(..)",
-                        "addHttpPipelinePolicy",
-                        true, false));
+        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
+                "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
 
     }
 
