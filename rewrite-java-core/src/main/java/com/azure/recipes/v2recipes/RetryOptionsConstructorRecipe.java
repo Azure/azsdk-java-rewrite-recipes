@@ -60,7 +60,12 @@ public class RetryOptionsConstructorRecipe extends Recipe {
         public J.VariableDeclarations visitVariableDeclarations(J.VariableDeclarations variableDeclarations, ExecutionContext executionContext) {
             J.VariableDeclarations vd = super.visitVariableDeclarations(variableDeclarations, executionContext);
             for (J.VariableDeclarations.NamedVariable variable : vd.getVariables()) {
-                J.NewClass newClass = (J.NewClass) variable.getInitializer();
+                J.NewClass newClass = null;
+                try {
+                    newClass = (J.NewClass) variable.getInitializer();
+                } catch (Exception e) {
+                    return vd;
+                }
                 if (newClass != null) {
                     String className = newClass.getType().toString();
                     if (className.contains("FixedDelayOptions") || className.contains("ExponentialDelayOptions")) {
