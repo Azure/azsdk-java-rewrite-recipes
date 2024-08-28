@@ -166,21 +166,3 @@ recipeList:
       find: '@UnexpectedResponseExceptionDetail(exceptionTypeName = "HttpResponseException.class", statusCode = {  })'
       replace: '@UnexpectedResponseExceptionDetail'
   # End exceptionTypeName parameter recipes
-
-  # Recipes that convert usages of TypeReference to ParameterizedType in toObject() method
-  # - Recipe 1: Changes TypeReference to ParameterizedType for variable declarations
-  # - Recipe 2: Changes TypeReference to ParameterizedType for direct instantiations with 'new' keyword
-  # - Recipe 3: Removes import for com.azure.core.util.serializer.TypeReference
-  - org.openrewrite.text.FindAndReplace: # Recipe 1
-      regex: true
-      find: 'TypeReference<\s*List<(\w+)>\s*>\s+(\w+)\s*=\s*new\s+TypeReference<\s*List<(\w+)>\s*>\(\)\s*\{'
-      replace: 'Type $2 = new ParameterizedType() { @Override public Type getRawType() { return List.class; } @Override public Type[] getActualTypeArguments() { return new Type[] { $1.class }; } @Override public Type getOwnerType() { return null; }'
-  - org.openrewrite.text.FindAndReplace: # Recipe 2
-      regex: true
-      find: 'new\s+TypeReference<\s*List<(\w+)>\s*>\(\)\s*\{'
-      replace: 'new ParameterizedType() { @Override public Type getRawType() { return List.class; } @Override public Type[] getActualTypeArguments() { return new Type[] { $1.class }; } @Override public Type getOwnerType() { return null; }'
-  - org.openrewrite.text.FindAndReplace: # Recipe 3
-      regex: true
-      find: 'import\s+com.azure.core.util.serializer.TypeReference\s*;'
-      replace: ''
-  # End TypeReference -> ParameterizedType recipes
