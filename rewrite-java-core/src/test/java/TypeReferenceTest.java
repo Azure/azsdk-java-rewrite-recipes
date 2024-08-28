@@ -1,3 +1,4 @@
+import com.azure.recipes.v2recipes.TypeReferenceRecipe;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
@@ -18,8 +19,7 @@ public class TypeReferenceTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
-                "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
+        spec.recipes(new TypeReferenceRecipe());
     }
 
     /**
@@ -34,23 +34,33 @@ public class TypeReferenceTest implements RewriteTest {
         before += "\nimport java.util.List;";
         before += "\nimport com.azure.core.util.serializer.TypeReference;";
         before += "\npublic class Testing {";
-        before += "\n  private static final TypeReference<List<Testing>> TESTING_TYPE = new TypeReference<List<Testing>>() {};";
+        before += "\n  private static final TypeReference<List<String>> TESTING_TYPE = new TypeReference<List<String>>() {\n  };";
         before += "\n}";
 
 
-        @Language("java") String after = "";
-        after += "\nimport java.lang.reflect.ParameterizedType;";
-        after += "\nimport java.lang.reflect.Type;";
-        after += "\nimport java.util.List;";
-        after += "\n\npublic class Testing {";
-        after += "\n  private static final Type TESTING_TYPE = new ParameterizedType() {";
-        after += " @Override public Type getRawType() { return List.class; }";
-        after += " @Override public Type[] getActualTypeArguments() { return new Type[] { Testing.class }; }";
-        after += " @Override public Type getOwnerType() { return null; }";
-        after += "};";
-        after += "\n}";
+        @Language("java") String after = "import java.lang.reflect.ParameterizedType;\n" +
+                "import java.lang.reflect.Type;\n" +
+                "import java.util.List;\n" +
+                "public class Testing {\n" +
+                "  private static final java.lang.reflect.Type TESTING_TYPE = new ParameterizedType() {\n" +
+                "      @Override\n" +
+                "      public java.lang.reflect.Type getRawType() {\n" +
+                "          return java.util.List.class;\n" +
+                "      }\n\n" +
+                "      @Override\n" +
+                "      public java.lang.reflect.Type[] getActualTypeArguments() {\n" +
+                "          return new java.lang.reflect.Type[]{String.class};\n" +
+                "      }\n\n" +
+                "      @Override\n" +
+                "      public java.lang.reflect.Type getOwnerType() {\n" +
+                "          return null;\n" +
+                "      }\n" +
+                "  };\n" +
+                "}\n";
 
         rewriteRun(
+                spec -> spec.cycles(2)
+                        .expectedCyclesThatMakeChanges(2),
                 java(before,after)
         );
     }
