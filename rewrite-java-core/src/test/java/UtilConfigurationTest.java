@@ -18,15 +18,25 @@ public class UtilConfigurationTest implements RewriteTest {
                 "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
 
+    /* Testing ChangeType recipe */
     @Test
-    public void testConfigurationImportChanged() {
-        @Language("java") String before = "import com.azure.core.util.Configuration;\n" +
-                "public class Testing { Configuration configuration; }\n";
+    public void testConfigurationTypeChanged() {
+        @Language("java") String before = "import com.azure.core.util.Configuration;";
+        before += "\npublic class Testing {";
+        before += "\n  public Testing(){";
+        before += "\n    com.azure.core.util.Configuration c = new Configuration();";
+        before += "\n  }";
+        before += "\n}";
 
-        @Language("java") String after = "import io.clientcore.core.util.configuration.Configuration;\n" +
-                "public class Testing { Configuration configuration; }\n";
-
-        rewriteRun(java(before,after));
+        @Language("java") String after = "import io.clientcore.core.util.configuration.Configuration;";
+        after += "\n\npublic class Testing {";
+        after += "\n  public Testing(){";
+        after += "\n    io.clientcore.core.util.configuration.Configuration c = new Configuration();";
+        after += "\n  }";
+        after += "\n}";
+        rewriteRun(
+                java(before,after)
+        );
     }
 
 }
