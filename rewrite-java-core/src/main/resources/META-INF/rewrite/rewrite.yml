@@ -112,6 +112,8 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.annotation.ReturnType
       newFullyQualifiedTypeName: com.azure.core.v2.annotation.ReturnType
 
+
+
   # Recipes to migrate implementations of com.azure.core.client.traits.HttpTrait
   # to io.clientcore.core.models.traits.HttpTrait
   # Add http prefix to renamed methods
@@ -166,6 +168,25 @@ recipeList:
       find: '@UnexpectedResponseExceptionDetail(exceptionTypeName = "HttpResponseException.class", statusCode = {  })'
       replace: '@UnexpectedResponseExceptionDetail'
   # End exceptionTypeName parameter recipes
+
+  # Recipes that update all instances of azure-core exceptions where
+  # use is equivalent and type/name change is sufficient/safe.
+  # Update to azure-core-v2 version
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.exception.ClientAuthenticationException
+      newFullyQualifiedTypeName: com.azure.core.v2.exception.ClientAuthenticationException
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.exception.ResourceModifiedException
+      newFullyQualifiedTypeName: com.azure.core.v2.exception.ResourceModifiedException
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.exception.ResourceNotFoundException
+      newFullyQualifiedTypeName: com.azure.core.v2.exception.ResourceNotFoundException
+  # Update to clientcore version
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.exception.HttpResponseException
+      newFullyQualifiedTypeName: io.clientcore.core.http.exception.HttpResponseException
+  # End azure-core-exception change type Recipes
+
   # Recipe that changes all instances of com.azure.core.util.Configuration
   # to io.clientcore.core.util.configuration.Configuration
   - org.openrewrite.java.ChangeType:
