@@ -39,14 +39,14 @@ public class ExceptionTypesTest implements RewriteTest {
         @Language("java") String before = "import com.azure.core.exception.ClientAuthenticationException;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.exception.ClientAuthenticationException e = new ClientAuthenticationException();";
+        before += "\n    com.azure.core.exception.ClientAuthenticationException e = new ClientAuthenticationException(null,null);";
         before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import com.azure.core.v2.exception.ClientAuthenticationException;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    com.azure.core.v2.exception.ClientAuthenticationException e = new ClientAuthenticationException();";
+        after += "\n    com.azure.core.v2.exception.ClientAuthenticationException e = new ClientAuthenticationException(null,null);";
         after += "\n  }";
         after += "\n}";
 
@@ -60,14 +60,14 @@ public class ExceptionTypesTest implements RewriteTest {
         @Language("java") String before = "import com.azure.core.exception.HttpResponseException;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.exception.HttpResponseException e = new HttpResponseException();";
+        before += "\n    com.azure.core.exception.HttpResponseException e = new HttpResponseException(null,null);";
         before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import io.clientcore.core.http.exception.HttpResponseException;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    io.clientcore.core.http.exception.HttpResponseException e = new HttpResponseException();";
+        after += "\n    io.clientcore.core.http.exception.HttpResponseException e = new HttpResponseException(null,null);";
         after += "\n  }";
         after += "\n}";
 
@@ -81,14 +81,14 @@ public class ExceptionTypesTest implements RewriteTest {
         @Language("java") String before = "import com.azure.core.exception.ResourceModifiedException;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.exception.ResourceModifiedException e = new ResourceModifiedException();";
+        before += "\n    com.azure.core.exception.ResourceModifiedException e = new ResourceModifiedException(null,null);";
         before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import com.azure.core.v2.exception.ResourceModifiedException;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    com.azure.core.v2.exception.ResourceModifiedException e = new ();";
+        after += "\n    com.azure.core.v2.exception.ResourceModifiedException e = new ResourceModifiedException(null,null);";
         after += "\n  }";
         after += "\n}";
 
@@ -102,14 +102,14 @@ public class ExceptionTypesTest implements RewriteTest {
         @Language("java") String before = "import com.azure.core.exception.ResourceNotFoundException;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.exception.ResourceNotFoundException e = new ResourceNotFoundException();";
+        before += "\n    com.azure.core.exception.ResourceNotFoundException e = new ResourceNotFoundException(null,null);";
         before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import com.azure.core.v2.exception.ResourceNotFoundException;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    com.azure.core.v2.exception.ResourceNotFoundException e = new ResourceNotFoundException();";
+        after += "\n    com.azure.core.v2.exception.ResourceNotFoundException e = new ResourceNotFoundException(null,null);";
         after += "\n  }";
         after += "\n}";
 
@@ -126,14 +126,19 @@ public class ExceptionTypesTest implements RewriteTest {
     public void testBundledImportsChanged() {
         @Language("java") String before = "import com.azure.core.exception.*;";
         before += "\npublic class Testing {";
+        before += "\n  public Testing(){";
+        before += "\n    com.azure.core.exception.ClientAuthenticationException e = new ClientAuthenticationException(null,null);";
+        before += "\n    com.azure.core.exception.HttpResponseException e = new HttpResponseException(null,null);";
+        before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import com.azure.core.exception.*;" +
-                "\nimport com.azure.core.v2.exception.*;" +
-                "\nio.clientcore.core.http.exception.HttpResponseException;";
+                "\nimport com.azure.core.v2.exception.ClientAuthenticationException;" +
+                "\nimport io.clientcore.core.http.exception.HttpResponseException;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    io.clientcore.core.util.configuration.Configuration c = new Configuration();";
+        after += "\n    com.azure.core.v2.exception.ClientAuthenticationException e = new ClientAuthenticationException(null,null);";
+        after += "\n    io.clientcore.core.http.exception.HttpResponseException e = new HttpResponseException(null,null);";
         after += "\n  }";
         after += "\n}";
         rewriteRun(
