@@ -37,8 +37,8 @@ public class ResponseTest implements RewriteTest {
         before += "\n  }";
         before += "\n}";
 
-        @Language("java") String after = "import com.azure.core.util.BinaryData;\n"
-                + "import io.clientcore.core.http.models.Response;";
+        @Language("java") String after = "import io.clientcore.core.http.models.Response;\n"
+                + "import io.clientcore.core.util.binarydata.BinaryData;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
         after += "\n    io.clientcore.core.http.models.Response<BinaryData> bdr = null;";
