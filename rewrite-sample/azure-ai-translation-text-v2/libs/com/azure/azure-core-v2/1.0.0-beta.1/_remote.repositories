@@ -1,0 +1,8 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Tue Jul 30 10:16:10 PDT 2024
+azure-core-v2-1.0.0-beta.1-changelog.md>=
+azure-core-v2-1.0.0-beta.1-readme.md>=
+azure-core-v2-1.0.0-beta.1-sources.jar>=
+azure-core-v2-1.0.0-beta.1-tests.jar>=
+azure-core-v2-1.0.0-beta.1.jar>=
+azure-core-v2-1.0.0-beta.1.pom>=
