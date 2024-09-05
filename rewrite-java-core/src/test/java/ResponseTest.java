@@ -29,19 +29,17 @@ public class ResponseTest implements RewriteTest {
      */
     @Test
     void testUpdateResponseTypeAndImport() {
-        @Language("java") String before = "import com.azure.core.http.rest.Response;\n" +
-                "import com.azure.core.util.BinaryData;";
+        @Language("java") String before = "import com.azure.core.http.rest.Response;\n";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.http.rest.Response<BinaryData> bdr = null;";
+        before += "\n    com.azure.core.http.rest.Response<String> str = null;";
         before += "\n  }";
         before += "\n}";
 
-        @Language("java") String after = "import io.clientcore.core.http.models.Response;\n"
-                + "import io.clientcore.core.util.binarydata.BinaryData;";
-        after += "\n\npublic class Testing {";
+        @Language("java") String after = "import io.clientcore.core.http.models.Response;\n";
+        after += "\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    io.clientcore.core.http.models.Response<BinaryData> bdr = null;";
+        after += "\n    io.clientcore.core.http.models.Response<String> str = null;";
         after += "\n  }";
         after += "\n}";
         rewriteRun(

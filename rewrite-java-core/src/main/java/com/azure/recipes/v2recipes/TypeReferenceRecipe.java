@@ -88,6 +88,10 @@ public class TypeReferenceRecipe extends Recipe {
                 return importStmt.withQualid(TypeTree.build(" java.lang.reflect.ParameterizedType"));
             }
 
+            if (importStmt.getQualid().toString().equals("com.azure.core.util.BinaryData")){
+                return importStmt.withQualid(TypeTree.build(" io.clientcore.core.util.binarydata.BinaryData"));
+            }
+
             // Return other imports normally
             return importStmt;
         }
@@ -103,6 +107,19 @@ public class TypeReferenceRecipe extends Recipe {
                 return visitedDeclarations.withTypeExpression(TypeTree.build(" java.lang.reflect.Type"));
             }
             return visitedDeclarations;
+        }
+
+        /**
+         * Method to visit BinaryData type and change it to the new version
+         */
+        @Override
+        public J.@NotNull FieldAccess visitFieldAccess(J.@NotNull FieldAccess fieldAccess, @NotNull ExecutionContext ctx) {
+            J.FieldAccess fa = super.visitFieldAccess(fieldAccess, ctx);
+            String fullyQualified = fa.getTarget() + "." + fa.getSimpleName();
+            if (fullyQualified.equals("com.azure.core.util.BinaryData")) {
+                return TypeTree.build(" io.clientcore.core.util.binarydata.BinaryData");
+            }
+            return fa;
         }
     }
 }
