@@ -124,7 +124,7 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.util.BinaryData
       newFullyQualifiedTypeName: io.clientcore.core.util.binarydata.BinaryData
 
-
+  # TODO: Add unit test for KeyCredential recipes
   # Recipe that changes all instances of com.azure.core.http.policy.KeyCredentialPolicy
   # to io.clientcore.core.http.pipeline.KeyCredentialPolicy
   - org.openrewrite.java.ChangeType:
