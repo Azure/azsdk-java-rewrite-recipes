@@ -135,4 +135,39 @@ public class HttpTraitTest implements RewriteTest {
         );
     }
 
+    @Test
+    void testHttpRedirectOptions_paramsChanged() {
+        @Language("java") String before = "import com.azure.core.client.traits.HttpTrait;\n" +
+                "import com.azure.core.util.ClientOptions;\n" +
+                "import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
+                "\n" +
+                "public class TestClass implements HttpTrait<TestClass> {\n" +
+                "\n" +
+                "    private HttpRedirectOptions redirectOptions;\n" +
+                "    @Override\n" +
+                "    public TestClass clientOptions(ClientOptions clientOptions) {\n" +
+                "        return null;\n" +
+                "    }\n" +
+                "}\n";
+
+        @Language("java") String after = "import com.azure.core.client.traits.HttpTrait;\n" +
+                "import com.azure.core.util.ClientOptions;\n" +
+                "import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
+
+                "\n" +
+                "public class TestClass implements HttpTrait<TestClass> {\n" +
+                "\n" +
+                "    private HttpRedirectOptions redirectOptions;\n" +
+                "\n" +
+                "    @Override\n" +
+                "    public TestClass clientOptions(HttpRedirectOptions options) {\n" +
+                "        this.redirectOptions = options;\n" +
+                "        return null;\n" +
+                "    }\n" +
+                "}\n";
+
+        rewriteRun(
+                java(before, after)
+        );
+    }
 }
