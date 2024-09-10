@@ -64,6 +64,6 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.util.Configuration
       newFullyQualifiedTypeName: io.clientcore.core.util.configuration.Configuration
 
-  - com.azure.recipes.v2.ContextRecipe
-  - com.azure.recipes.v2.RetryOptionsConstructorRecipe
-  - com.azure.recipes.v2.TypeReferenceRecipe
+  - com.azure.recipes.core.v2.ContextRecipe
+  - com.azure.recipes.core.v2.RetryOptionsConstructorRecipe
+  - com.azure.recipes.core.v2.TypeReferenceRecipe
