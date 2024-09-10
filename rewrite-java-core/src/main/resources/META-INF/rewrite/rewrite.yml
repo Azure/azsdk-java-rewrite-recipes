@@ -200,7 +200,10 @@ recipeList:
       methodPattern: com.azure.core.client.traits.HttpTrait addPolicy(..)
       newMethodName: addHttpPipelinePolicy
       matchOverrides: true
-
+ # Change HttpTrait Type to clientcore version
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.client.traits.HttpTrait
+      newFullyQualifiedTypeName: io.clientcore.core.models.traits.HttpTrait
   # End HttpTrait recipes
   # Recipe to change com.azure.core.credential package name to io.clientcore.core.credential
   - org.openrewrite.java.ChangePackage:
