@@ -32,7 +32,6 @@ public class ChangeClientOptionsParamsRecipe extends Recipe {
     }
 
     @Override
-
     public @NonNull TreeVisitor<?, ExecutionContext> getVisitor() {
         return new AddVariableDeclarationVisitor();
 
