@@ -56,6 +56,7 @@ public class HttpTraitTest implements RewriteTest {
                 "import com.azure.core.http.policy.HttpPipelinePolicy;\n" +
                 "import com.azure.core.http.policy.RetryOptions;\n" +
                 "import com.azure.core.util.ClientOptions;\n" +
+
                 "\n" +
                 "public class BlankHttpTrait implements HttpTrait<BlankHttpTrait> {\n" +
                 "    @Override\n" +
@@ -89,7 +90,7 @@ public class HttpTraitTest implements RewriteTest {
                 "    }\n" +
                 "}";
 
-        @Language("java") String after = "import com.azure.core.client.traits.HttpTrait;\n" +
+        @Language("java") String after =
                 "import com.azure.core.http.policy.HttpLogOptions;\n" +
                 "import com.azure.core.http.policy.RetryOptions;\n" +
                 "import io.clientcore.core.http.client.HttpClient;\n" +
@@ -98,6 +99,7 @@ public class HttpTraitTest implements RewriteTest {
                 //"import io.clientcore.core.http.models.HttpRetryOptions;\n" +
                 "import io.clientcore.core.http.pipeline.HttpPipeline;\n" +
                 "import io.clientcore.core.http.pipeline.HttpPipelinePolicy;\n" +
+                "import io.clientcore.core.models.traits.HttpTrait;\n" +
                 "\n" +
                 "public class BlankHttpTrait implements HttpTrait<BlankHttpTrait> {\n" +
                 "    @Override\n" +
@@ -155,9 +157,9 @@ public class HttpTraitTest implements RewriteTest {
                 "    }\n" +
                 "}\n";
 
-        @Language("java") String after = "import com.azure.core.client.traits.HttpTrait;\n" +
-                "import com.azure.core.util.ClientOptions;\n" +
+        @Language("java") String after = "import com.azure.core.util.ClientOptions;\n" +
                 "import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
+                "import io.clientcore.core.models.traits.HttpTrait;\n" +
                 "\n" +
                 "public class TestClass implements HttpTrait<TestClass> {\n" +
                 "\n" +
