@@ -28,7 +28,7 @@ public class AddHttpRedirectOptionsDeclarationRecipe extends Recipe {
 
     public class AddVariableDeclarationVisitor extends JavaIsoVisitor<ExecutionContext> {
 
-        private final MethodMatcher methodMatcher = new MethodMatcher("com.azure.core.client.traits.HttpTrait clientOptions(..)", true);
+        private final MethodMatcher methodMatcher = new MethodMatcher("com.azure.core.client.traits.HttpTrait clientOptions(com.azure.core.util.ClientOptions)", true);
 
         @Override
         public J.ClassDeclaration visitClassDeclaration(J.ClassDeclaration classDeclaration, ExecutionContext executionContext) {
@@ -63,7 +63,30 @@ public class AddHttpRedirectOptionsDeclarationRecipe extends Recipe {
            if (methodMatcher.matches(methodDeclaration.getMethodType())) {
 
                getCursor().putMessageOnFirstEnclosing(J.ClassDeclaration.class, "FOUND_METHOD", methodDeclaration);
-               // can maybe alter here??
+               //  WORKING
+               JavaTemplate addParametersTemplate = JavaTemplate.builder("HttpRedirectOptions options")
+                       .javaParser(JavaParser.fromJavaVersion().classpathFromResources(executionContext, "core-1.0.0-beta.1"))
+                       .imports("io.clientcore.core.http.models.HttpRedirectOptions")
+                       .build();
+
+               JavaTemplate addBody = JavaTemplate.builder("this.redirectOptions = options; ") //return this;
+                       .javaParser(JavaParser.fromJavaVersion().classpathFromResources(executionContext, "core-1.0.0-beta.1"))
+                       .contextSensitive()
+                       .imports("io.clientcore.core.http.models.HttpRedirectOptions")
+                       .build();
+
+               maybeAddImport("io.clientcore.core.http.models.HttpRedirectOptions");
+
+               methodDeclaration = addParametersTemplate.apply(updateCursor(methodDeclaration),
+                       methodDeclaration.getCoordinates().replaceParameters());
+
+               if (methodDeclaration.getBody() == null) { return methodDeclaration; }
+               methodDeclaration = maybeAutoFormat(
+                       //methodDeclaration, addBody.apply(updateCursor(methodDeclaration), methodDeclaration.getCoordinates().replaceBody()),executionContext
+                       methodDeclaration, addBody.apply(updateCursor(methodDeclaration),methodDeclaration.getBody().getCoordinates().firstStatement()),executionContext
+               );
+
+               //Should not change name here. Would cause errors with invocations
            }
            return methodDeclaration;
         }
