@@ -149,12 +149,39 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.client.traits.KeyCredentialTrait
       newFullyQualifiedTypeName: io.clientcore.core.models.traits.KeyCredentialTrait
 
+  # NOTE:
+  #    A copy of the client-core jar file must be in the resources\classpath
+  #    directory to reliably parse from clientcore library
 
+  # --------------------------------------------------------------------
   # Recipes to migrate implementations of com.azure.core.client.traits.HttpTrait
   # to io.clientcore.core.models.traits.HttpTrait
+  # --------------------------------------------------------------------
+  # Change Types from the azure-core to clientcore versions
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.http.HttpClient
+      newFullyQualifiedTypeName: io.clientcore.core.http.client.HttpClient
+      ignoreDefinition: false
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.http.HttpPipeline
+      newFullyQualifiedTypeName: io.clientcore.core.http.pipeline.HttpPipeline
+      ignoreDefinition: false
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.http.policy.HttpPipelinePolicy
+      newFullyQualifiedTypeName: io.clientcore.core.http.pipeline.HttpPipelinePolicy
+      ignoreDefinition: false
+#  - org.openrewrite.java.ChangeType:
+#      oldFullyQualifiedTypeName: com.azure.core.http.policy.HttpLogOptions
+#      newFullyQualifiedTypeName: io.clientcore.core.http.models.HttpLogOptions
+#      ignoreDefinition: false
+#  - org.openrewrite.java.ChangeType:
+#      oldFullyQualifiedTypeName: com.azure.core.http.policy.RetryOptions
+#      newFullyQualifiedTypeName: io.clientcore.core.http.models.HttpRetryOptions
+#      ignoreDefinition: false
+
   # Recipe to transform clientOptions to httpRedirectOptions:
-    # preserves return type,
-    # updates method body and declaring class
+    # preserves return type, updates method body and declaring class.
+    # Does not rename method
   - com.azure.recipes.v2recipes.ChangeClientOptionsParamsRecipe
   # Rename methods
   - org.openrewrite.java.ChangeMethodName:
