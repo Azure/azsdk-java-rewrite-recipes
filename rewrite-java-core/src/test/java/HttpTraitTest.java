@@ -1,6 +1,5 @@
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
-import org.openrewrite.java.ChangeMethodName;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
@@ -23,7 +22,6 @@ public class HttpTraitTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
                 "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
-
     }
 
     /**
@@ -44,9 +42,10 @@ public class HttpTraitTest implements RewriteTest {
 
     /**
      * Test simple declarative rename of:
-     * retryOptions() to httpRetryOptions()
-     * pipeline() to httpPipeline()
-     * addPolicy() to addHttpPipelinePolicy
+     * retryOptions to httpRetryOptions
+     * pipeline to httpPipeline
+     * addPolicy to addHttpPipelinePolicy
+     * and complex rename of clientOptions to httpRedirectOptions
      */
     @Test
     void declarativeRenameMethodsSuccessful() {
@@ -96,7 +95,7 @@ public class HttpTraitTest implements RewriteTest {
                 "import com.azure.core.http.policy.HttpLogOptions;\n" +
                 "import com.azure.core.http.policy.HttpPipelinePolicy;\n" +
                 "import com.azure.core.http.policy.RetryOptions;\n" +
-                "import com.azure.core.util.ClientOptions;\n" +
+                "import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
                 "\n" +
                 "public class BlankHttpTrait implements HttpTrait<BlankHttpTrait> {\n" +
                 "    @Override\n" +
@@ -124,9 +123,12 @@ public class HttpTraitTest implements RewriteTest {
                 "        return null;\n" +
                 "    }\n" +
                 "\n" +
+                "    private HttpRedirectOptions redirectOptions;\n" +
+                "\n" +
                 "    @Override\n" +
-                "    public BlankHttpTrait clientOptions(ClientOptions clientOptions) {\n" +
-                "        return null;\n" +
+                "    public BlankHttpTrait httpRedirectOptions(HttpRedirectOptions redirectOptions) {\n" +
+                "        this.redirectOptions = redirectOptions;\n" +
+                "        return this;\n" +
                 "    }\n" +
                 "}";
 
@@ -136,16 +138,18 @@ public class HttpTraitTest implements RewriteTest {
     }
 
     @Test
-    void testHttpRedirectOptions_paramsChanged() {
+    void test_clientOptions_httpRedirectOptions_migration() {
         @Language("java") String before = "import com.azure.core.client.traits.HttpTrait;\n" +
                 "import com.azure.core.util.ClientOptions;\n" +
                 //"import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
                 "\n" +
                 "public class TestClass implements HttpTrait<TestClass> {\n" +
                 "\n" +
-              //
+                "    private ClientOptions clientOptions;" +
+                "\n" +
                 "    @Override\n" +
                 "    public TestClass clientOptions(ClientOptions clientOptions) {\n" +
+                "        this.clientOptions = clientOptions;\n" +
                 "        return null;\n" +
                 "    }\n" +
                 "}\n";
@@ -153,16 +157,18 @@ public class HttpTraitTest implements RewriteTest {
         @Language("java") String after = "import com.azure.core.client.traits.HttpTrait;\n" +
                 "import com.azure.core.util.ClientOptions;\n" +
                 "import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
-
                 "\n" +
                 "public class TestClass implements HttpTrait<TestClass> {\n" +
+                "\n" +
+                "    private ClientOptions clientOptions;\n" +
                 "\n" +
                 "    private HttpRedirectOptions redirectOptions;\n" +
                 "\n" +
                 "    @Override\n" +
-                "    public TestClass clientOptions(HttpRedirectOptions options) {\n" +
-                "        this.redirectOptions = options;\n" +
-                "        return null;\n" +
+                "    public TestClass httpRedirectOptions(HttpRedirectOptions redirectOptions) {\n" +
+                "        this.redirectOptions = redirectOptions;\n" +
+                //"        this.clientOptions = clientOptions;\n" +
+                "        return this;\n" +
                 "    }\n" +
                 "}\n";
 
