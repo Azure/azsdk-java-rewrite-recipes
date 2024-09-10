@@ -139,11 +139,11 @@ public class HttpTraitTest implements RewriteTest {
     void testHttpRedirectOptions_paramsChanged() {
         @Language("java") String before = "import com.azure.core.client.traits.HttpTrait;\n" +
                 "import com.azure.core.util.ClientOptions;\n" +
-                "import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
+                //"import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
                 "\n" +
                 "public class TestClass implements HttpTrait<TestClass> {\n" +
                 "\n" +
-                "    private HttpRedirectOptions redirectOptions;\n" +
+              //
                 "    @Override\n" +
                 "    public TestClass clientOptions(ClientOptions clientOptions) {\n" +
                 "        return null;\n" +

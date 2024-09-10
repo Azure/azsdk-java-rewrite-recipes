@@ -166,7 +166,8 @@ recipeList:
       methodPattern: com.azure.core.client.traits.HttpTrait addPolicy(..)
       newMethodName: addHttpPipelinePolicy
       matchOverrides: true
-  - com.azure.recipes.v2recipes.ChangeMethodClientOptionsToHttpRetryOptions
+#  - com.azure.recipes.v2recipes.ChangeMethodClientOptionsToHttpRetryOptions
+  - com.azure.recipes.v2recipes.AddHttpRedirectOptionsDeclarationRecipe
   # TODO: Delete method clientOptions
   # TODO: Add method httpRedirectOptions and HttpRedirectOptions variable
   # End HttpTrait recipes
