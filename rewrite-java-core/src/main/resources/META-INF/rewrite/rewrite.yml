@@ -35,25 +35,6 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.util.logging.ClientLogger
       newFullyQualifiedTypeName: io.clientcore.core.util.ClientLogger
 
-  # Recipes to migrate implementations of com.azure.core.client.traits.HttpTrait
-  # to io.clientcore.core.models.traits.HttpTrait
-  # Add http prefix to renamed methods
-  # TODO: Filter for implementing classes
-  - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait retryOptions(..)
-      newMethodName: httpRetryOptions
-      matchOverrides: true
-  - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait pipeline(..)
-      newMethodName: httpPipeline
-      matchOverrides: true
-  - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait addPolicy(..)
-      newMethodName: addHttpPipelinePolicy
-      matchOverrides: true
-  # TODO: Delete method clientOptions
-  # TODO: Add method httpRedirectOptions and HttpRedirectOptions variable
-  # End HttpTrait recipes
   # Recipe to change com.azure.core.credential package name to io.clientcore.core.credential
   - org.openrewrite.java.ChangePackage:
         oldPackageName: com.azure.core.credential
@@ -82,3 +63,7 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.util.Configuration
       newFullyQualifiedTypeName: io.clientcore.core.util.configuration.Configuration
+
+  - com.azure.recipes.v2.ContextRecipe
+  - com.azure.recipes.v2.RetryOptionsConstructorRecipe
+  - com.azure.recipes.v2.TypeReferenceRecipe

@@ -1,6 +1,7 @@
+package com.azure.recipes.v2;
+
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
-import org.openrewrite.java.ChangePackage;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
@@ -31,14 +32,35 @@ public class CredentialTest implements RewriteTest {
         @Language("java") String before = "import com.azure.core.credential.KeyCredential;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.credential.KeyCredential kc = new KeyCredential(\"<api-key>\");";
+        before += "\n    KeyCredential kc = new KeyCredential(\"<api-key>\");";
         before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import io.clientcore.core.credential.KeyCredential;";
         after += "\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    io.clientcore.core.credential.KeyCredential kc = new KeyCredential(\"<api-key>\");";
+        after += "\n    KeyCredential kc = new KeyCredential(\"<api-key>\");";
+        after += "\n  }";
+        after += "\n}";
+        rewriteRun(
+                java(before,after)
+        );
+    }
+
+    /**
+     * This test method is used to make sure that the KeyCredential type is changed
+     */
+    @Test
+    void testKeyCredentialChangeNoImport() {
+        @Language("java") String before = "\npublic class Testing {";
+        before += "\n  public Testing(){";
+        before += "\n    com.azure.core.credential.KeyCredential kc = new com.azure.core.credential.KeyCredential(\"<api-key>\");";
+        before += "\n  }";
+        before += "\n}";
+
+        @Language("java") String after = "\npublic class Testing {";
+        after += "\n  public Testing(){";
+        after += "\n    io.clientcore.core.credential.KeyCredential kc = new io.clientcore.core.credential.KeyCredential(\"<api-key>\");";
         after += "\n  }";
         after += "\n}";
         rewriteRun(

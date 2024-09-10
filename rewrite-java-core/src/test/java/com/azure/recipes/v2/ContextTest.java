@@ -1,4 +1,5 @@
-import com.azure.recipes.v2recipes.ContextRecipe;
+package com.azure.recipes.v2;
+
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
@@ -19,7 +20,8 @@ public class ContextTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new ContextRecipe());
+        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
+                "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
 
     /**
