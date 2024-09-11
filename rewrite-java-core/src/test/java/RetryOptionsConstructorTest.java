@@ -56,16 +56,20 @@ public class RetryOptionsConstructorTest implements RewriteTest {
         @Language("java") String before = "import com.azure.core.http.policy.RetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
         before += "\npublic class Testing {";
         before += "\n  FixedDelayOptions f = new FixedDelayOptions(3, Duration.ofMillis(50));";
+        before += "\n  String test = \"testing\";";
         before += "\n  public Testing(){";
         before += "\n    com.azure.core.http.policy.RetryOptions r = new RetryOptions(f);";
+        before += "\n     test = \"test\";";
         before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import io.clientcore.core.http.models.HttpRetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
         after += "\npublic class Testing {";
         after += "\n  FixedDelayOptions f = new FixedDelayOptions(3, Duration.ofMillis(50));";
+        after += "\n  String test = \"testing\";";
         after += "\n  public Testing(){";
         after += "\n     io.clientcore.core.http.models.HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
+        after += "\n     test = \"test\";";
         after += "\n  }";
         after += "\n}";
         rewriteRun(
