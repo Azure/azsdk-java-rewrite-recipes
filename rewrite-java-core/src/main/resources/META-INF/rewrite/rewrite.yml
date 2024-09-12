@@ -136,7 +136,6 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.util.CoreUtils
       newFullyQualifiedTypeName: com.azure.core.v2.util.CoreUtils
 
-  # TODO: Add unit test for KeyCredential recipes
   # Recipe that changes all instances of com.azure.core.http.policy.KeyCredentialPolicy
   # to io.clientcore.core.http.pipeline.KeyCredentialPolicy
   - org.openrewrite.java.ChangeType:
@@ -176,14 +175,6 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.http.policy.HttpPipelinePolicy
       newFullyQualifiedTypeName: io.clientcore.core.http.pipeline.HttpPipelinePolicy
       ignoreDefinition: false
-#  - org.openrewrite.java.ChangeType:
-#      oldFullyQualifiedTypeName: com.azure.core.http.policy.HttpLogOptions
-#      newFullyQualifiedTypeName: io.clientcore.core.http.models.HttpLogOptions
-#      ignoreDefinition: false
-#  - org.openrewrite.java.ChangeType:
-#      oldFullyQualifiedTypeName: com.azure.core.http.policy.RetryOptions
-#      newFullyQualifiedTypeName: io.clientcore.core.http.models.HttpRetryOptions
-#      ignoreDefinition: false
 
   # Recipe to transform clientOptions to httpRedirectOptions:
     # preserves return type, updates method body and declaring class.
