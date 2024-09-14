@@ -20,14 +20,14 @@ public class HttpLogOptionsTest implements RewriteTest {
         spec.recipe(new HttpLogOptionsRecipe());
     }
 
-    /* Test to make sure HttpLogOptions and HttpLogDetailLevel type is changed, while also updating imports*/
+    /* Test to make sure HttpLogOptions and HttpLogDetailLevel imports are changed*/
     @Test
-    public void testHttpLogOptionsLogLevelChanged() {
+    public void testHttpLogOptionsLogLevelImportsChanged() {
         @Language("java") String before = "import com.azure.core.http.policy.HttpLogOptions;";
         before += "\nimport com.azure.core.http.policy.HttpLogDetailLevel;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.http.policy.HttpLogOptions h = new HttpLogOptions();h.setLogLevel(HttpLogDetailLevel.BODY_AND_HEADERS);";
+        before += "\n    HttpLogOptions h = new HttpLogOptions();h.setLogLevel(HttpLogDetailLevel.BODY_AND_HEADERS);";
         before += "\n  }";
         before += "\n}";
 
@@ -35,7 +35,27 @@ public class HttpLogOptionsTest implements RewriteTest {
         after += "\nimport io.clientcore.core.http.models.HttpLogOptions.HttpLogDetailLevel;";
         after += "\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n     io.clientcore.core.http.models.HttpLogOptions h = new HttpLogOptions();h.setLogLevel(HttpLogDetailLevel.BODY_AND_HEADERS);";
+        after += "\n    HttpLogOptions h = new HttpLogOptions();h.setLogLevel(HttpLogDetailLevel.BODY_AND_HEADERS);";
+        after += "\n  }";
+        after += "\n}";
+        rewriteRun(
+                java(before,after)
+        );
+    }
+
+
+    /* Test to make sure HttpLogOptions and HttpLogDetailLevel type is changed*/
+    @Test
+    public void testHttpLogOptionsLogLevelTypesChanged() {
+        @Language("java") String before = "\npublic class Testing {";
+        before += "\n  public Testing(){";
+        before += "\n    com.azure.core.http.policy.HttpLogOptions h = new com.azure.core.http.policy.HttpLogOptions();h.setLogLevel(com.azure.core.http.policy.HttpLogDetailLevel.BODY_AND_HEADERS);";
+        before += "\n  }";
+        before += "\n}";
+
+        @Language("java") String after = "\npublic class Testing {";
+        after += "\n  public Testing(){";
+        after += "\n     io.clientcore.core.http.models.HttpLogOptions h = new io.clientcore.core.http.models.HttpLogOptions();h.setLogLevel( io.clientcore.core.http.models.HttpLogOptions.HttpLogDetailLevel.BODY_AND_HEADERS);";
         after += "\n  }";
         after += "\n}";
         rewriteRun(
