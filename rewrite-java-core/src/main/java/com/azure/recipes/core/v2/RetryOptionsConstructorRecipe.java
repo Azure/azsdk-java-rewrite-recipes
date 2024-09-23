@@ -111,9 +111,6 @@ public class RetryOptionsConstructorRecipe extends Recipe {
             if (visitedIdentifier.getSimpleName().equals("RetryOptions")) {
                 return visitedIdentifier.withSimpleName("HttpRetryOptions");
             }
-            if (visitedIdentifier.getSimpleName().equals("retryOptions")) {
-                return visitedIdentifier.withSimpleName("httpRetryOptions");
-            }
             return visitedIdentifier;
         }
 
