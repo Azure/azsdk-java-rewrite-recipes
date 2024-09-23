@@ -1,3 +1,5 @@
+package com.azure.recipes.core.v2;
+
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
@@ -91,50 +93,48 @@ public class HttpTraitTest implements RewriteTest {
                 "}";
 
         @Language("java") String after =
-                "import com.azure.core.http.policy.HttpLogOptions;\n" +
-                "import com.azure.core.http.policy.RetryOptions;\n" +
-                "import io.clientcore.core.http.client.HttpClient;\n" +
-                //"import io.clientcore.core.http.models.HttpLogOptions;\n" +
-                "import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
-                //"import io.clientcore.core.http.models.HttpRetryOptions;\n" +
-                "import io.clientcore.core.http.pipeline.HttpPipeline;\n" +
-                "import io.clientcore.core.http.pipeline.HttpPipelinePolicy;\n" +
-                "import io.clientcore.core.models.traits.HttpTrait;\n" +
-                "\n" +
-                "public class BlankHttpTrait implements HttpTrait<BlankHttpTrait> {\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait httpClient(HttpClient httpClient) {\n" +
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait httpPipeline(HttpPipeline pipeline) {\n" +
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait addHttpPipelinePolicy(HttpPipelinePolicy pipelinePolicy) {\n" +
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait httpRetryOptions(RetryOptions retryOptions) {\n" + //HttpRetryOptions
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait httpLogOptions(HttpLogOptions logOptions) {\n" +
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    private HttpRedirectOptions redirectOptions;\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait httpRedirectOptions(HttpRedirectOptions redirectOptions) {\n" +
-                "        this.redirectOptions = redirectOptions;\n" +
-                "        return this;\n" +
-                "    }\n" +
-                "}";
+                        "import io.clientcore.core.http.models.HttpLogOptions;\n" +
+                        "import io.clientcore.core.http.models.HttpRetryOptions;\n" +
+                        "import io.clientcore.core.http.client.HttpClient;\n" +
+                        "import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
+                        "import io.clientcore.core.http.pipeline.HttpPipeline;\n" +
+                        "import io.clientcore.core.http.pipeline.HttpPipelinePolicy;\n" +
+                        "import io.clientcore.core.models.traits.HttpTrait;\n" +
+                        "\n" +
+                        "public class BlankHttpTrait implements HttpTrait<BlankHttpTrait> {\n" +
+                        "    @Override\n" +
+                        "    public BlankHttpTrait httpClient(HttpClient httpClient) {\n" +
+                        "        return null;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public BlankHttpTrait httpPipeline(HttpPipeline pipeline) {\n" +
+                        "        return null;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public BlankHttpTrait addHttpPipelinePolicy(HttpPipelinePolicy pipelinePolicy) {\n" +
+                        "        return null;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public BlankHttpTrait httpRetryOptions(HttpRetryOptions httpRetryOptions) {\n" + //HttpRetryOptions
+                        "        return null;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public BlankHttpTrait httpLogOptions(HttpLogOptions logOptions) {\n" +
+                        "        return null;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    private HttpRedirectOptions redirectOptions;\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public BlankHttpTrait httpRedirectOptions(HttpRedirectOptions redirectOptions) {\n" +
+                        "        this.redirectOptions = redirectOptions;\n" +
+                        "        return this;\n" +
+                        "    }\n" +
+                        "}";
 
         rewriteRun(
                 java(before,after)

@@ -17,23 +17,6 @@ recipeList:
   #
   # ----------------------------------
 
-  # Recipes that converts the parameters and type of the @UnexpectedResponseExceptionType annotation
-  # to @UnexpectedResponseExceptionDetail.
-  # - Recipes 1-2: Change the attribute names
-  # - Recipe 3: Changes the type
-  - org.openrewrite.java.ChangeAnnotationAttributeName:
-      annotationType: com.azure.core.annotation.UnexpectedResponseExceptionType
-      oldAttributeName: value
-      newAttributeName: exceptionTypeName
-  - org.openrewrite.java.ChangeAnnotationAttributeName:
-      annotationType: com.azure.core.annotation.UnexpectedResponseExceptionType
-      oldAttributeName: code
-      newAttributeName: statusCode
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.UnexpectedResponseExceptionType
-      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.UnexpectedResponseExceptionDetail
-  # End @UnexpectedResponseExceptionDetail recipes
-
   # Recipe that changes all instances of com.azure.core.http.rest.RequestOptions
   # to io.clientcore.core.http.models.RequestOptions
   - org.openrewrite.java.ChangeType:
@@ -52,83 +35,11 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.http.HttpHeaderName
       newFullyQualifiedTypeName: io.clientcore.core.http.models.HttpHeaderName
 
-  # Recipe that changes all instances of com.azure.core.annotation.HostParam
-  # to io.clientcore.core.http.annotation.HostParam
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.HostParam
-      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.HostParam
-
-  # Recipe that changes all instances of com.azure.core.annotation.HeaderParam
-  # to io.clientcore.core.http.annotation.HeaderParam
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.HeaderParam
-      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.HeaderParam
-
-  # Recipe that changes all instances of com.azure.core.annotation.BodyParam
-  # to io.clientcore.core.http.annotation.BodyParam
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.BodyParam
-      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.BodyParam
-
-  # Recipe that changes all instances of com.azure.core.annotation.QueryParam
-  # to io.clientcore.core.http.annotation.QueryParam
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.QueryParam
-      newFullyQualifiedTypeName: io.clientcore.core.http.annotation.QueryParam
-
-  # Recipe that changes all instances of com.azure.core.annotation.ServiceClient
-  # to com.azure.core.v2.annotation.ServiceClient
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceClient
-      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceClient
-
-  # Recipe that changes all instances of com.azure.core.annotation.ServiceClientBuilder
-  # to com.azure.core.v2.annotation.ServiceClientBuilder
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceClientBuilder
-      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceClientBuilder
-
-  # Recipe that changes all instances of com.azure.core.annotation.ServiceInterface
-  # to io.clientcore.core.annotation.ServiceInterface
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceInterface
-      newFullyQualifiedTypeName: io.clientcore.core.annotation.ServiceInterface
-
-  # Recipe that changes all instances of com.azure.core.annotation.ServiceMethod
-  # to com.azure.core.v2.annotation.ServiceMethod
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.ServiceMethod
-      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ServiceMethod
-
-  # Recipe that changes all instances of com.azure.core.annotation.Generated
-  # to com.azure.core.v2.annotation.Generated
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.Generated
-      newFullyQualifiedTypeName: com.azure.core.v2.annotation.Generated
-
-  # Recipe that changes all instances of com.azure.core.annotation.Immutable
-  # to com.azure.core.v2.annotation.Immutable
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.Immutable
-      newFullyQualifiedTypeName: com.azure.core.v2.annotation.Immutable
-
-  # Recipe that changes all instances of com.azure.core.annotation.ReturnType
-  # to com.azure.core.v2.annotation.ReturnType
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.annotation.ReturnType
-      newFullyQualifiedTypeName: com.azure.core.v2.annotation.ReturnType
-
   # Recipe that changes all instances of com.azure.core.util.logging.ClientLogger
   # to io.clientcore.core.util.ClientLogger
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.util.logging.ClientLogger
       newFullyQualifiedTypeName: io.clientcore.core.util.ClientLogger
-
-  # Recipe that changes all instances of com.azure.core.util.BinaryData
-  # to io.clientcore.core.util.binarydata.BinaryData
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.util.BinaryData
-      newFullyQualifiedTypeName: io.clientcore.core.util.binarydata.BinaryData
 
   # Recipe that changes all instances of com.azure.core.util.CoreUtils
   # to com.azure.core.v2.util.CoreUtils
@@ -179,7 +90,7 @@ recipeList:
   # Recipe to transform clientOptions to httpRedirectOptions:
     # preserves return type, updates method body and declaring class.
     # Does not rename method
-  - com.azure.recipes.v2recipes.ChangeClientOptionsParamsRecipe
+  - com.azure.recipes.core.v2.ChangeClientOptionsParamsRecipe
   # Rename methods
   - org.openrewrite.java.ChangeMethodName:
       methodPattern: com.azure.core.client.traits.HttpTrait clientOptions(..)
@@ -202,41 +113,11 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.client.traits.HttpTrait
       newFullyQualifiedTypeName: io.clientcore.core.models.traits.HttpTrait
   # End HttpTrait recipes
+
   # Recipe to change com.azure.core.credential package name to io.clientcore.core.credential
   - org.openrewrite.java.ChangePackage:
         oldPackageName: com.azure.core.credential
         newPackageName: io.clientcore.core.credential
-
-  # --------------------------------
-  #
-  # Text Based Replacement Recipes
-  #
-  # --------------------------------
-
-  # Recipes that convert exceptionTypeName parameter in @UnexpectedResponseExceptionDetail annotation
-  # from the CamelCase form to UPPER_CASE form.
-  # - Recipe 1: Adds quotation marks around field, so it can be found easily
-  # - Recipe 2: Converts ClientAuthenticationException
-  # - Recipe 3: Converts ResourceNotFoundException
-  # - Recipe 4: Converts ResourceModifiedException
-  # - Recipe 5: Converts HttpResponseException
-  - org.openrewrite.text.FindAndReplace:
-      regex: true
-      find: '@UnexpectedResponseExceptionDetail\s*\(\s*exceptionTypeName\s*=\s*([\w.]+)\s*(?:,\s*statusCode\s*=\s*\{\s*([0-9]+)\s*\}\s*)?\)'
-      replace: '@UnexpectedResponseExceptionDetail(exceptionTypeName = "$1", statusCode = { $2 })'
-  - org.openrewrite.text.FindAndReplace:
-      find: '"ClientAuthenticationException.class"'
-      replace: '"CLIENT_AUTHENTICATION"'
-  - org.openrewrite.text.FindAndReplace:
-      find: '"ResourceNotFoundException.class"'
-      replace: '"RESOURCE_NOT_FOUND"'
-  - org.openrewrite.text.FindAndReplace:
-      find: '"ResourceModifiedException.class"'
-      replace: '"RESOURCE_MODIFIED"'
-  - org.openrewrite.text.FindAndReplace:
-      find: '@UnexpectedResponseExceptionDetail(exceptionTypeName = "HttpResponseException.class", statusCode = {  })'
-      replace: '@UnexpectedResponseExceptionDetail'
-  # End exceptionTypeName parameter recipes
 
   # Recipes that update all instances of azure-core exceptions where
   # use is equivalent and type/name change is sufficient/safe.
@@ -261,3 +142,20 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.util.Configuration
       newFullyQualifiedTypeName: io.clientcore.core.util.configuration.Configuration
+
+  - com.azure.recipes.core.v2.ContextRecipe
+  - com.azure.recipes.core.v2.RetryOptionsConstructorRecipe
+  - com.azure.recipes.core.v2.TypeReferenceRecipe
+  - com.azure.recipes.core.v2.HttpLogOptionsRecipe
+
+  # ----------------------------------
+  #
+  # Text-Based Replacement Recipes
+  #
+  # ----------------------------------
+
+  # Recipe to replace retryOptions argument in httpRetryOptions HttpTrait method
+  # to httpRetryOptions
+  - org.openrewrite.text.FindAndReplace:
+      find: 'httpRetryOptions(HttpRetryOptions retryOptions)'
+      replace: 'httpRetryOptions(HttpRetryOptions httpRetryOptions)'

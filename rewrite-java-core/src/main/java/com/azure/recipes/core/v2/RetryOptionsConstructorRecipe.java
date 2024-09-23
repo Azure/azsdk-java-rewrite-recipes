@@ -1,4 +1,4 @@
-package com.azure.recipes.v2recipes;
+package com.azure.recipes.core.v2;
 
 import org.jetbrains.annotations.NotNull;
 import org.openrewrite.ExecutionContext;
@@ -110,9 +110,6 @@ public class RetryOptionsConstructorRecipe extends Recipe {
             J.Identifier visitedIdentifier = super.visitIdentifier(identifier, ctx);
             if (visitedIdentifier.getSimpleName().equals("RetryOptions")) {
                 return visitedIdentifier.withSimpleName("HttpRetryOptions");
-            }
-            if (visitedIdentifier.getSimpleName().equals("retryOptions")) {
-                return visitedIdentifier.withSimpleName("httpRetryOptions");
             }
             return visitedIdentifier;
         }

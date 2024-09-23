@@ -1,3 +1,5 @@
+package com.azure.recipes.core.v2;
+
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;

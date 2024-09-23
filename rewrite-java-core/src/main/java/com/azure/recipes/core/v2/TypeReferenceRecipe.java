@@ -1,4 +1,4 @@
-package com.azure.recipes.v2recipes;
+package com.azure.recipes.core.v2;
 
 import org.jetbrains.annotations.NotNull;
 import org.openrewrite.*;
@@ -22,7 +22,7 @@ public class TypeReferenceRecipe extends Recipe {
 
     @Override
     public @NotNull String getDescription() {
-        return "This recipe converts TypeReference<List<T>> to ParameterizedType and removes the import statement for TypeReference.";
+        return "This recipe converts TypeReference<> to ParameterizedType and removes the import statement for TypeReference.";
     }
 
     @Override
@@ -47,15 +47,30 @@ public class TypeReferenceRecipe extends Recipe {
                     .anyMatch(methodDeclaration -> methodDeclaration.getName().getSimpleName().equals("getRawType"));
 
             if (!alreadyTransformed && visitedNewClass.toString().contains("TypeReference")) {
-                // Extract type from List type in TypeReference declaration
-                Pattern pattern = Pattern.compile("List<(\\w+)>");
+                // Extract type from generic type in TypeReference declaration
+                Pattern pattern = Pattern.compile("<([\\w.]+)<([\\w.]+)(?:,\\s*([\\w.]+))?>>");
                 Matcher matcher = pattern.matcher(visitedNewClass.toString());
-                String type = matcher.find() ? matcher.group(1) : null;
+                String genType = null;
+                String type = null;
+                String type2 = null;
+                if(matcher.find()){ // Check if using generic type
+                    genType = matcher.group(1);
+                    type = matcher.group(2);
+                    type2 = matcher.group(3);
+                }
 
-                JavaTemplate methodRawTypeTemplate = JavaTemplate.builder("@Override public java.lang.reflect.Type getRawType() { return java.util.List.class; }").build();
-                JavaTemplate methodActualTypeTemplate = JavaTemplate.builder("@Override public java.lang.reflect.Type[] getActualTypeArguments() { return new java.lang.reflect.Type[] {  " + type + ".class  }; }").build();
+                JavaTemplate methodRawTypeTemplate = JavaTemplate.builder("@Override public java.lang.reflect.Type getRawType() { return " + extractTypeArgument(visitedNewClass.toString()) + ".class; }").build();
+                if (genType!=null){
+                    methodRawTypeTemplate = JavaTemplate.builder("@Override public java.lang.reflect.Type getRawType() { return " + genType + ".class; }").build();
+                }
+                JavaTemplate methodActualTypeTemplate = JavaTemplate.builder("@Override public java.lang.reflect.Type[] getActualTypeArguments() { return new java.lang.reflect.Type[] {}; }").build();
+                if (type != null){
+                    methodActualTypeTemplate = JavaTemplate.builder("@Override public java.lang.reflect.Type[] getActualTypeArguments() { return new java.lang.reflect.Type[] {  " + type + ".class  }; }").build();
+                }
                 JavaTemplate methodOwnerTypeTemplate = JavaTemplate.builder("@Override public java.lang.reflect.Type getOwnerType() { return null; }").build();
-
+                if (type2 != null){ // If TypeReference uses Map<T,V> or any other class with the same structure like Foo<T,V>
+                    methodActualTypeTemplate = JavaTemplate.builder("@Override public java.lang.reflect.Type[] getActualTypeArguments() { return new java.lang.reflect.Type[] {  " + type + ".class," + type2 + ".class  }; }").build();
+                }
                 // Apply Templates (add methods to body)
 
                 visitedNewClass = visitedNewClass.withBody(methodRawTypeTemplate.apply(new Cursor(getCursor(), visitedNewClass.getBody()),
@@ -66,6 +81,7 @@ public class TypeReferenceRecipe extends Recipe {
                         visitedNewClass.getBody().getCoordinates().lastStatement()));
 
                 visitedNewClass = visitedNewClass.withClazz(TypeTree.build(" ParameterizedType")); // Replace TypeReference with Type
+
             }
             return visitedNewClass;
         }
@@ -88,6 +104,10 @@ public class TypeReferenceRecipe extends Recipe {
                 return importStmt.withQualid(TypeTree.build(" java.lang.reflect.ParameterizedType"));
             }
 
+            if (importStmt.getQualid().toString().equals("com.azure.core.util.BinaryData")){
+                return importStmt.withQualid(TypeTree.build(" io.clientcore.core.util.binarydata.BinaryData"));
+            }
+
             // Return other imports normally
             return importStmt;
         }
@@ -104,5 +124,31 @@ public class TypeReferenceRecipe extends Recipe {
             }
             return visitedDeclarations;
         }
+
+        /**
+         * Method to visit BinaryData type and change it to the new version
+         */
+        @Override
+        public J.@NotNull FieldAccess visitFieldAccess(J.@NotNull FieldAccess fieldAccess, @NotNull ExecutionContext ctx) {
+            J.FieldAccess fa = super.visitFieldAccess(fieldAccess, ctx);
+            String fullyQualified = fa.getTarget() + "." + fa.getSimpleName();
+            if (fullyQualified.equals("com.azure.core.util.BinaryData")) {
+                return TypeTree.build(" io.clientcore.core.util.binarydata.BinaryData");
+            }
+            return fa;
+        }
+        public String extractTypeArgument(String text) {
+            // Find the start and end of the type argument
+            int startIndex = text.indexOf('<');
+            int endIndex = text.indexOf('>', startIndex);
+
+            if (startIndex == -1 || endIndex == -1) {
+                return null; // If '<' or '>' not found, return null
+            }
+
+            // Extract the substring between the angle brackets
+            return text.substring(startIndex + 1, endIndex).trim();
+        }
     }
+
 }

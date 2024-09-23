@@ -22,6 +22,3 @@ jobs:
 
       - name: Clean install
         run: mvn clean install
-      
-      - name: Execute Unit Tests
-        run: mvn test
