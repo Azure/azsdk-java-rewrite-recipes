@@ -1,6 +1,4 @@
 package com.azure.recipes.core.v2;
-
-import com.azure.recipes.v2recipes.HttpLogOptionsRecipe;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
@@ -19,7 +17,8 @@ public class HttpLogOptionsTest implements RewriteTest {
 
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new HttpLogOptionsRecipe());
+        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
+            "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
 
     /* Test to make sure HttpLogOptions and HttpLogDetailLevel imports are changed*/

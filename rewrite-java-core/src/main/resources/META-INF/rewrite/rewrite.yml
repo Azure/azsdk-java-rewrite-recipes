@@ -90,7 +90,7 @@ recipeList:
   # Recipe to transform clientOptions to httpRedirectOptions:
     # preserves return type, updates method body and declaring class.
     # Does not rename method
-  - com.azure.recipes.v2recipes.ChangeClientOptionsParamsRecipe
+  - com.azure.recipes.core.v2.ChangeClientOptionsParamsRecipe
   # Rename methods
   - org.openrewrite.java.ChangeMethodName:
       methodPattern: com.azure.core.client.traits.HttpTrait clientOptions(..)
@@ -146,7 +146,7 @@ recipeList:
   - com.azure.recipes.core.v2.ContextRecipe
   - com.azure.recipes.core.v2.RetryOptionsConstructorRecipe
   - com.azure.recipes.core.v2.TypeReferenceRecipe
-  - com.azure.recipes.v2recipes.HttpLogOptionsRecipe
+  - com.azure.recipes.core.v2.HttpLogOptionsRecipe
 
   # ----------------------------------
   #
