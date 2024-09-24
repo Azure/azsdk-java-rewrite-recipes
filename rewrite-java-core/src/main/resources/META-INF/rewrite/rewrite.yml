@@ -97,15 +97,15 @@ recipeList:
       newMethodName: httpRedirectOptions
       matchOverrides: true
   - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait retryOptions(..)
+      methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder retryOptions(..)
       newMethodName: httpRetryOptions
       matchOverrides: true
   - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait pipeline(..)
+      methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder pipeline(..)
       newMethodName: httpPipeline
       matchOverrides: true
   - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait addPolicy(..)
+      methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder addPolicy(..)
       newMethodName: addHttpPipelinePolicy
       matchOverrides: true
  # Change HttpTrait Type to clientcore version

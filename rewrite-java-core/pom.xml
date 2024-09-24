@@ -103,15 +103,26 @@
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
+            <artifactId>azure-ai-translation-text</artifactId>
+            <version>1.0.0-beta.1</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Alternatively, use in project version -->
+        <!--
+        <dependency>
+            <groupId>com.azure</groupId>
             <artifactId>azure-ai-translation-text-v1</artifactId>
             <version>1.0.0-beta.1</version>
             <scope>test</scope>
         </dependency>
+        -->
+        <!--
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-ai-translation-text-v2</artifactId>
             <version>1.0.0-beta.1</version>
             <scope>test</scope>
         </dependency>
+        -->
     </dependencies>
 </project>
