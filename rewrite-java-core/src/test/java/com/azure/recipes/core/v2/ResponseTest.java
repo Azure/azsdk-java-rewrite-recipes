@@ -26,25 +26,46 @@ public class ResponseTest implements RewriteTest {
     }
 
     /**
-     * This test method is used to make sure that the Response type is updated to the new version
+     * This test method is used to make sure that the Response import is updated to the new version
      */
     @Test
-    void testUpdateResponseTypeAndImport() {
+    void testUpdateResponseTypeWithImport() {
         @Language("java") String before = "import com.azure.core.http.rest.Response;\n";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.http.rest.Response<String> str = null;";
+        before += "\n    Response<String> str = null;";
         before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import io.clientcore.core.http.models.Response;\n";
         after += "\npublic class Testing {";
         after += "\n  public Testing(){";
+        after += "\n    Response<String> str = null;";
+        after += "\n  }";
+        after += "\n}";
+        rewriteRun(
+                java(before, after)
+        );
+    }
+    /**
+     * This test method is used to make sure that the Response type is updated to the new version
+     */
+    @Test
+    void testUpdateResponseTypeWithFullyQualifiedName() {
+        @Language("java") String before = "public class Testing {";
+        before += "\n  public Testing(){";
+        before += "\n    com.azure.core.http.rest.Response<String> str = null;";
+        before += "\n  }";
+        before += "\n}";
+
+        @Language("java") String after = "import io.clientcore.core.http.models.Response;\n\n";
+        after += "public class Testing {";
+        after += "\n  public Testing(){";
         after += "\n    io.clientcore.core.http.models.Response<String> str = null;";
         after += "\n  }";
         after += "\n}";
         rewriteRun(
-                java(before,after)
+                java(before, after)
         );
     }
 }
