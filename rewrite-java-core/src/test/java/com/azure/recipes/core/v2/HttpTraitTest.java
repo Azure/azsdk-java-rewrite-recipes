@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
+
 import static org.openrewrite.java.Assertions.java;
 
 /**
@@ -25,7 +26,6 @@ public class HttpTraitTest implements RewriteTest {
         spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
                 "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
-
     /**
      * Test that non-interface methods with the same name are not altered.
      */
@@ -51,90 +51,33 @@ public class HttpTraitTest implements RewriteTest {
      */
     @Test
     void declarativeRenameMethodsSuccessful() {
-        @Language("java") String before = "import com.azure.core.client.traits.HttpTrait;\n" +
-                "import com.azure.core.http.HttpClient;\n" +
-                "import com.azure.core.http.HttpPipeline;\n" +
-                "import com.azure.core.http.policy.HttpLogOptions;\n" +
-                "import com.azure.core.http.policy.HttpPipelinePolicy;\n" +
-                "import com.azure.core.http.policy.RetryOptions;\n" +
-                "import com.azure.core.util.ClientOptions;\n" +
-
-                "\n" +
-                "public class BlankHttpTrait implements HttpTrait<BlankHttpTrait> {\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait httpClient(HttpClient httpClient) {\n" +
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait pipeline(HttpPipeline pipeline) {\n" +
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait addPolicy(HttpPipelinePolicy pipelinePolicy) {\n" +
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait retryOptions(RetryOptions retryOptions) {\n" +
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait httpLogOptions(HttpLogOptions logOptions) {\n" +
-                "        return null;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public BlankHttpTrait clientOptions(ClientOptions clientOptions) {\n" +
-                "        return null;\n" +
-                "    }\n" +
+        @Language("java") String before = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
+                "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
+                "public class UserClass {\n" +
+                "    \n" +
+                "    TextTranslationClient textTranslationClient = new TextTranslationClientBuilder()\n" +
+                "            .pipeline(null)\n" +
+                "            .addPolicy(null)\n" +
+                "            .retryOptions(null)\n" +
+                "            .httpLogOptions(null)\n" +
+                "            .clientOptions(null)\n" +
+                "            .buildClient();\n" +
                 "}";
 
-        @Language("java") String after =
-                        "import io.clientcore.core.http.models.HttpLogOptions;\n" +
-                        "import io.clientcore.core.http.models.HttpRetryOptions;\n" +
-                        "import io.clientcore.core.http.client.HttpClient;\n" +
-                        "import io.clientcore.core.http.models.HttpRedirectOptions;\n" +
-                        "import io.clientcore.core.http.pipeline.HttpPipeline;\n" +
-                        "import io.clientcore.core.http.pipeline.HttpPipelinePolicy;\n" +
-                        "import io.clientcore.core.models.traits.HttpTrait;\n" +
-                        "\n" +
-                        "public class BlankHttpTrait implements HttpTrait<BlankHttpTrait> {\n" +
-                        "    @Override\n" +
-                        "    public BlankHttpTrait httpClient(HttpClient httpClient) {\n" +
-                        "        return null;\n" +
-                        "    }\n" +
-                        "\n" +
-                        "    @Override\n" +
-                        "    public BlankHttpTrait httpPipeline(HttpPipeline pipeline) {\n" +
-                        "        return null;\n" +
-                        "    }\n" +
-                        "\n" +
-                        "    @Override\n" +
-                        "    public BlankHttpTrait addHttpPipelinePolicy(HttpPipelinePolicy pipelinePolicy) {\n" +
-                        "        return null;\n" +
-                        "    }\n" +
-                        "\n" +
-                        "    @Override\n" +
-                        "    public BlankHttpTrait httpRetryOptions(HttpRetryOptions httpRetryOptions) {\n" + //HttpRetryOptions
-                        "        return null;\n" +
-                        "    }\n" +
-                        "\n" +
-                        "    @Override\n" +
-                        "    public BlankHttpTrait httpLogOptions(HttpLogOptions logOptions) {\n" +
-                        "        return null;\n" +
-                        "    }\n" +
-                        "\n" +
-                        "    private HttpRedirectOptions redirectOptions;\n" +
-                        "\n" +
-                        "    @Override\n" +
-                        "    public BlankHttpTrait httpRedirectOptions(HttpRedirectOptions redirectOptions) {\n" +
-                        "        this.redirectOptions = redirectOptions;\n" +
-                        "        return this;\n" +
-                        "    }\n" +
-                        "}";
+
+        @Language("java") String after = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
+                "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
+                "public class UserClass {\n" +
+                "\n" +
+                "        TextTranslationClient textTranslationClient = new TextTranslationClientBuilder()\n" +
+                "                .httpPipeline(null)\n" +
+                "                .addHttpPipelinePolicy(null)\n" +
+                "                .httpRetryOptions(null)\n" +
+                "                .httpLogOptions(null)\n" +
+                "                .httpRedirectOptions(null)\n" +
+                "                .buildClient();\n" +
+                "\n" +
+                "}";
 
         rewriteRun(
                 java(before,after)
