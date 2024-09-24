@@ -2,7 +2,6 @@ package com.azure.recipes.core.v2;
 
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
-import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 import org.openrewrite.test.TypeValidation;
@@ -24,6 +23,7 @@ public class TypeReferenceTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
                 "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
+        // Added due to bug in OpenRewrite parser when parsing azure TypeReference instantiation
         spec.typeValidationOptions(TypeValidation.none());
     }
 
@@ -152,4 +152,3 @@ public class TypeReferenceTest implements RewriteTest {
         );
     }
 }
-
