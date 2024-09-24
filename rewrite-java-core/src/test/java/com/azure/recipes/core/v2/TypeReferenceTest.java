@@ -2,6 +2,7 @@ package com.azure.recipes.core.v2;
 
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
+import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 import org.openrewrite.test.TypeValidation;
@@ -81,7 +82,7 @@ public class TypeReferenceTest implements RewriteTest {
         before += "\nimport java.util.Map;";
         before += "\nimport com.azure.core.util.serializer.TypeReference;";
         before += "\npublic class Testing {";
-        before += "\n  private static final TypeReference<java.util.Map<String, Integer>> TESTING_TYPE = new TypeReference<java.util.Map<String, Integer>>() {\n  };";
+        before += "\n  private static final TypeReference<Map<String, Integer>> TESTING_TYPE = new TypeReference<Map<String, Integer>>() {\n  };";
         before += "\n}";
 
 
