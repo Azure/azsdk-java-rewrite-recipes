@@ -49,14 +49,14 @@ public class TypeReferenceRecipe extends Recipe {
                     .filter(statement -> statement instanceof J.MethodDeclaration)
                     .map(J.MethodDeclaration.class::cast)
                     .anyMatch(methodDeclaration -> methodDeclaration.getName().getSimpleName().equals("getRawType"));
-
-            if (!alreadyTransformed && visitedNewClass.toString().contains("TypeReference")) {
+            if (visitedNewClass.getClazz() == null){return visitedNewClass;}
+            if (!alreadyTransformed && visitedNewClass.getClazz().toString().contains("TypeReference")) {
                 // Extract type from generic type in TypeReference declaration
                 String genType = null;
                 String type = null;
                 String type2 = null;
                 List<JavaType> fullType = null;
-                if (visitedNewClass.getClazz() == null){return visitedNewClass;}
+
 
                 if(visitedNewClass.getClazz().getType() != null){
                     try {
