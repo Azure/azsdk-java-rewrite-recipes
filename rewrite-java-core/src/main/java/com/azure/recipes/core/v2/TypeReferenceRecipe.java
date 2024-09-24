@@ -112,8 +112,10 @@ public class TypeReferenceRecipe extends Recipe {
          * Also makes sure that no duplicate imports of ParameterizedType are created.
          */
         int count = 0;
+
         @Override
         public J.@NotNull Import visitImport(J.@NotNull Import importStmt, @NotNull ExecutionContext ctx) {
+
             if (importStmt.getQualid().toString().equals("java.lang.reflect.ParameterizedType")) {
                 count ++;
             }
@@ -141,7 +143,8 @@ public class TypeReferenceRecipe extends Recipe {
             J.VariableDeclarations visitedDeclarations = super.visitVariableDeclarations(multiVariable, executionContext);
             if (visitedDeclarations.toString().contains("TypeReference")
                     && visitedDeclarations.toString().contains("ParameterizedType")) {
-                return visitedDeclarations.withTypeExpression(TypeTree.build(" Type"));
+                visitedDeclarations = visitedDeclarations.withTypeExpression(TypeTree.build(" Type"));
+                return visitedDeclarations;
             }
             return visitedDeclarations;
         }
@@ -158,6 +161,34 @@ public class TypeReferenceRecipe extends Recipe {
             }
             return fa;
         }
+
+        /**
+         * Method to add import for java.lang.reflect.Type if needed
+         */
+        @Override
+        public J.CompilationUnit visitCompilationUnit(J.CompilationUnit cu, ExecutionContext executionContext) {
+            J.CompilationUnit visitedCompilationUnit = super.visitCompilationUnit(cu, executionContext);
+            J.Import newImport = null;
+            boolean addTypeImport = false;
+            if (visitedCompilationUnit.getImports().isEmpty()){return visitedCompilationUnit;}
+            for (J.Import i : visitedCompilationUnit.getImports()) {
+                newImport = i;
+                if (i.toString().contains("java.lang.reflect.Type")){
+                    return visitedCompilationUnit;
+                }
+                if (i.toString().contains("java.lang.reflect.ParameterizedType")){
+                    addTypeImport = true;
+                }
+            }
+            if (addTypeImport) {
+                newImport = newImport.withQualid(TypeTree.build(" java.lang.reflect.Type"));
+                List<J.Import> imports = visitedCompilationUnit.getImports();
+                imports.add(newImport);
+                return visitedCompilationUnit.withImports(imports);
+            }
+            return visitedCompilationUnit;
+        }
+
         public String extractTypeArgument(String text) {
             // Find the start and end of the type argument
             int startIndex = text.indexOf('<');
