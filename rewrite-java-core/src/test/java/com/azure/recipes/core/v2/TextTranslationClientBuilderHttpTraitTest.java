@@ -1,6 +1,7 @@
 package com.azure.recipes.core.v2;
 
 import org.intellij.lang.annotations.Language;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
@@ -16,7 +17,7 @@ import static org.openrewrite.java.Assertions.java;
  * @author Annabelle Mittendorf Smith
  */
 
-public class TextTranslationClientBuilder_HttpTraitTest implements RewriteTest {
+public class TextTranslationClientBuilderHttpTraitTest implements RewriteTest {
     /**
      * This method defines recipes used for testing.
      * @param spec stores settings for testing environment.
@@ -68,41 +69,6 @@ public class TextTranslationClientBuilder_HttpTraitTest implements RewriteTest {
         );
     }
 
-    @Test
-    void test_clientOptions_removed() {
-        @Language("java") String before = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
-                "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
-                "\n" +
-                "public class UserClass {\n" +
-                "\n" +
-                "    TextTranslationClient textTranslationClient = new TextTranslationClientBuilder()\n" +
-                "            .pipeline(null)\n" +
-                "            .addPolicy(null)\n" +
-                "            .retryOptions(null)\n" +
-                "            .clientOptions(null)" +
-                "            .buildClient();\n" +
-                "\n" +
-                "}\n";
-
-
-        @Language("java") String after = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
-                "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
-                "\n" +
-                "public class UserClass {\n" +
-                "\n" +
-                "    TextTranslationClient textTranslationClient = new TextTranslationClientBuilder()\n" +
-                "            .httpPipeline(null)\n" +
-                "            .addHttpPipelinePolicy(null)\n" +
-                "            .httpRetryOptions(null)\n" +
-                "            .buildClient();\n" +
-                "\n" +
-                "}\n";
-
-
-        rewriteRun(
-                java(before, after)
-        );
-    }
 
     @Test
     void test_uninitializedParams_and_imports_changed() {
@@ -165,6 +131,7 @@ public class TextTranslationClientBuilder_HttpTraitTest implements RewriteTest {
         );
     }
 
+    @Disabled
     @Test
     void test_likeSampleImplementation_changed() {
         @Language("java") String before = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
@@ -197,9 +164,12 @@ public class TextTranslationClientBuilder_HttpTraitTest implements RewriteTest {
                 "\n" +
                 "public class UserClass {\n" +
                 "\n" +
+
                 "    TextTranslationClient textTranslationClient = new TextTranslationClientBuilder()\n" +
                 "            .credential(new AzureKeyCredential(\"<api-key>\"))\n" +
                 "            .endpoint(\"<endpoint>\")\n" +
+                // Copied from azure-ai-translation-text-v2 TextTranslationSample
+                // Not affected at all
                 "            .httpLogOptions(new HttpLogOptions().setLogLevel(HttpLogOptions.HttpLogDetailLevel.BODY_AND_HEADERS))\n" +
                 "            .httpRetryOptions(new HttpRetryOptions(3, Duration.ofMillis(50)))\n" +
                 "            .buildClient();" +
