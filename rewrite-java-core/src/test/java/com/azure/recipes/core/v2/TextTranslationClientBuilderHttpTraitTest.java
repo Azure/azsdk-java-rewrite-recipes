@@ -131,7 +131,7 @@ public class TextTranslationClientBuilderHttpTraitTest implements RewriteTest {
         );
     }
 
-    @Disabled
+
     @Test
     void test_likeSampleImplementation_changed() {
         @Language("java") String before = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
