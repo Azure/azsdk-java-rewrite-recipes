@@ -33,10 +33,9 @@ public class HttpLogOptionsTest implements RewriteTest {
         before += "\n}";
 
         @Language("java") String after = "import io.clientcore.core.http.models.HttpLogOptions;";
-        after += "\nimport io.clientcore.core.http.models.HttpLogOptions.HttpLogDetailLevel;";
         after += "\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    HttpLogOptions h = new HttpLogOptions();h.setLogLevel(HttpLogDetailLevel.BODY_AND_HEADERS);";
+        after += "\n    HttpLogOptions h = new HttpLogOptions();h.setLogLevel(HttpLogOptions.HttpLogDetailLevel.BODY_AND_HEADERS);";
         after += "\n  }";
         after += "\n}";
         rewriteRun(

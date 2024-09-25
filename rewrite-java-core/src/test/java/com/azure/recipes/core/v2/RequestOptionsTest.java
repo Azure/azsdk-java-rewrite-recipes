@@ -25,25 +25,46 @@ public class RequestOptionsTest implements RewriteTest {
     }
 
     /**
-     * This test method is used to make sure that the class type and import for RequestOptions is updated
+     * This test method is used to make sure that the class import for RequestOptions is updated
      */
     @Test
-    void testChangeRequestImportAndType() {
+    void testChangeRequestImportWithImport() {
         @Language("java") String before = "import com.azure.core.http.rest.RequestOptions;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.http.rest.RequestOptions r = new RequestOptions();";
+        before += "\n    RequestOptions r = new RequestOptions();";
         before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import io.clientcore.core.http.models.RequestOptions;";
         after += "\n\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    io.clientcore.core.http.models.RequestOptions r = new RequestOptions();";
+        after += "\n    RequestOptions r = new RequestOptions();";
         after += "\n  }";
         after += "\n}";
         rewriteRun(
-                java(before,after)
+                java(before, after)
+        );
+    }
+
+    /**
+     * This test method is used to make sure that the class type for RequestOptions is updated
+     */
+    @Test
+    void testChangeRequestImportWithFullyQualifiedName() {
+        @Language("java") String before = "public class Testing {";
+        before += "\n  public Testing(){";
+        before += "\n    com.azure.core.http.rest.RequestOptions r = new com.azure.core.http.rest.RequestOptions();";
+        before += "\n  }";
+        before += "\n}";
+
+        @Language("java") String after = "public class Testing {";
+        after += "\n  public Testing(){";
+        after += "\n    io.clientcore.core.http.models.RequestOptions r = new io.clientcore.core.http.models.RequestOptions();";
+        after += "\n  }";
+        after += "\n}";
+        rewriteRun(
+                java(before, after)
         );
     }
 }

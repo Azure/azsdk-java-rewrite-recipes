@@ -67,10 +67,12 @@ public class RetryOptionsConstructorRecipe extends Recipe {
                     return vd;
                 }
                 if (newClass != null) {
-                    String className = newClass.getType().toString();
-                    if (className.contains("FixedDelayOptions") || className.contains("ExponentialDelayOptions")) {
-                        List<Expression> args = new ArrayList<>(newClass.getArguments());
-                        variableToArgsMap.put(variable.getSimpleName(), args);
+                    if (newClass.getType() != null) {
+                        String className = newClass.getType().toString();
+                        if (className.contains("FixedDelayOptions") || className.contains("ExponentialDelayOptions")) {
+                            List<Expression> args = new ArrayList<>(newClass.getArguments());
+                            variableToArgsMap.put(variable.getSimpleName(), args);
+                        }
                     }
                 }
             }
@@ -125,6 +127,18 @@ public class RetryOptionsConstructorRecipe extends Recipe {
                 return TypeTree.build(" io.clientcore.core.http.models.HttpRetryOptions");
             }
             return visitedFieldAccess;
+        }
+
+        /**
+         * Method to change usages of retryOptions builder method to httpRetryOptions
+         */
+        @Override
+        public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext executionContext) {
+            J.MethodInvocation visitedMethodInv = super.visitMethodInvocation(method, executionContext);
+            if (visitedMethodInv.getSimpleName().equals("retryOptions")) {
+                return visitedMethodInv.withName(visitedMethodInv.getName().withSimpleName("httpRetryOptions"));
+            }
+            return visitedMethodInv;
         }
     }
 }

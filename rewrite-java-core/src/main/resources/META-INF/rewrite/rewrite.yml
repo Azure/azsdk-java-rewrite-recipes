@@ -136,6 +136,7 @@ recipeList:
   - com.azure.recipes.core.v2.RetryOptionsConstructorRecipe
   - com.azure.recipes.core.v2.TypeReferenceRecipe
   - com.azure.recipes.core.v2.HttpLogOptionsRecipe
+  - com.azure.recipes.core.v2.RemoveFixedDelayRecipe
 
   # ----------------------------------
   #
@@ -148,3 +149,9 @@ recipeList:
   - org.openrewrite.text.FindAndReplace:
       find: 'httpRetryOptions(HttpRetryOptions retryOptions)'
       replace: 'httpRetryOptions(HttpRetryOptions httpRetryOptions)'
+
+  # Recipe to replace HttpLogDetailLevel call with HttpLogOptions.HttpLogDetailLevel
+  - org.openrewrite.text.FindAndReplace:
+      find: '(?<!\.)[\w]*[\s]*HttpLogDetailLevel'
+      replace: 'HttpLogOptions.HttpLogDetailLevel'
+      regex: true
