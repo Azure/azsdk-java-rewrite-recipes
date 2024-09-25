@@ -2,8 +2,10 @@ package com.azure.recipes.core.v2;
 
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
+import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
+import org.openrewrite.test.TypeValidation;
 
 import static org.openrewrite.java.Assertions.java;
 
@@ -22,6 +24,8 @@ public class TypeReferenceTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
                 "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
+        // Added due to bug in OpenRewrite parser when parsing azure TypeReference instantiation
+        spec.typeValidationOptions(TypeValidation.none());
     }
 
     /**
@@ -33,26 +37,28 @@ public class TypeReferenceTest implements RewriteTest {
         @Language("java") String before = "";
         before += "\nimport java.lang.reflect.ParameterizedType;";
         before += "\nimport java.lang.reflect.Type;";
+        before += "\nimport java.util.List;";
         before += "\nimport com.azure.core.util.serializer.TypeReference;";
         before += "\npublic class Testing {";
-        before += "\n  private static final TypeReference<java.util.List<String>> TESTING_TYPE = new TypeReference<java.util.List<String>>() {\n  };";
+        before += "\n  private static final TypeReference<List<String>> TESTING_TYPE = new TypeReference<List<String>>() {\n  };";
         before += "\n}";
 
 
         @Language("java") String after = "import java.lang.reflect.ParameterizedType;\n" +
                 "import java.lang.reflect.Type;\n" +
+                "import java.util.List;\n"+
                 "public class Testing {\n" +
-                "  private static final java.lang.reflect.Type TESTING_TYPE = new ParameterizedType() {\n" +
+                "  private static final Type TESTING_TYPE = new ParameterizedType() {\n" +
                 "      @Override\n" +
-                "      public java.lang.reflect.Type getRawType() {\n" +
-                "          return java.util.List.class;\n" +
+                "      public Type getRawType() {\n" +
+                "          return List.class;\n" +
                 "      }\n\n" +
                 "      @Override\n" +
-                "      public java.lang.reflect.Type[] getActualTypeArguments() {\n" +
-                "          return new java.lang.reflect.Type[]{String.class};\n" +
+                "      public Type[] getActualTypeArguments() {\n" +
+                "          return new Type[]{String.class};\n" +
                 "      }\n\n" +
                 "      @Override\n" +
-                "      public java.lang.reflect.Type getOwnerType() {\n" +
+                "      public Type getOwnerType() {\n" +
                 "          return null;\n" +
                 "      }\n" +
                 "  };\n" +
@@ -73,26 +79,28 @@ public class TypeReferenceTest implements RewriteTest {
         @Language("java") String before = "";
         before += "\nimport java.lang.reflect.ParameterizedType;";
         before += "\nimport java.lang.reflect.Type;";
+        before += "\nimport java.util.Map;";
         before += "\nimport com.azure.core.util.serializer.TypeReference;";
         before += "\npublic class Testing {";
-        before += "\n  private static final TypeReference<java.util.Map<String,Integer>> TESTING_TYPE = new TypeReference<java.util.Map<String, Integer>>() {\n  };";
+        before += "\n  private static final TypeReference<Map<String, Integer>> TESTING_TYPE = new TypeReference<Map<String, Integer>>() {\n  };";
         before += "\n}";
 
 
         @Language("java") String after = "import java.lang.reflect.ParameterizedType;\n" +
                 "import java.lang.reflect.Type;\n" +
+                "import java.util.Map;\n" +
                 "public class Testing {\n" +
-                "  private static final java.lang.reflect.Type TESTING_TYPE = new ParameterizedType() {\n" +
+                "  private static final Type TESTING_TYPE = new ParameterizedType() {\n" +
                 "      @Override\n" +
-                "      public java.lang.reflect.Type getRawType() {\n" +
-                "          return java.util.Map.class;\n" +
+                "      public Type getRawType() {\n" +
+                "          return Map.class;\n" +
                 "      }\n\n" +
                 "      @Override\n" +
-                "      public java.lang.reflect.Type[] getActualTypeArguments() {\n" +
-                "          return new java.lang.reflect.Type[]{String.class, Integer.class};\n" +
+                "      public Type[] getActualTypeArguments() {\n" +
+                "          return new Type[]{String.class, Integer.class};\n" +
                 "      }\n\n" +
                 "      @Override\n" +
-                "      public java.lang.reflect.Type getOwnerType() {\n" +
+                "      public Type getOwnerType() {\n" +
                 "          return null;\n" +
                 "      }\n" +
                 "  };\n" +
@@ -122,17 +130,17 @@ public class TypeReferenceTest implements RewriteTest {
         @Language("java") String after = "import java.lang.reflect.ParameterizedType;\n" +
                 "import java.lang.reflect.Type;\n" +
                 "public class Testing {\n" +
-                "  private static final java.lang.reflect.Type TESTING_TYPE = new ParameterizedType() {\n" +
+                "  private static final Type TESTING_TYPE = new ParameterizedType() {\n" +
                 "      @Override\n" +
-                "      public java.lang.reflect.Type getRawType() {\n" +
+                "      public Type getRawType() {\n" +
                 "          return String.class;\n" +
                 "      }\n\n" +
                 "      @Override\n" +
-                "      public java.lang.reflect.Type[] getActualTypeArguments() {\n" +
-                "          return new java.lang.reflect.Type[]{};\n" +
+                "      public Type[] getActualTypeArguments() {\n" +
+                "          return new Type[]{};\n" +
                 "      }\n\n" +
                 "      @Override\n" +
-                "      public java.lang.reflect.Type getOwnerType() {\n" +
+                "      public Type getOwnerType() {\n" +
                 "          return null;\n" +
                 "      }\n" +
                 "  };\n" +
@@ -145,4 +153,3 @@ public class TypeReferenceTest implements RewriteTest {
         );
     }
 }
-

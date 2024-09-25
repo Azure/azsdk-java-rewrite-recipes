@@ -67,10 +67,12 @@ public class RetryOptionsConstructorRecipe extends Recipe {
                     return vd;
                 }
                 if (newClass != null) {
-                    String className = newClass.getType().toString();
-                    if (className.contains("FixedDelayOptions") || className.contains("ExponentialDelayOptions")) {
-                        List<Expression> args = new ArrayList<>(newClass.getArguments());
-                        variableToArgsMap.put(variable.getSimpleName(), args);
+                    if (newClass.getType() != null) {
+                        String className = newClass.getType().toString();
+                        if (className.contains("FixedDelayOptions") || className.contains("ExponentialDelayOptions")) {
+                            List<Expression> args = new ArrayList<>(newClass.getArguments());
+                            variableToArgsMap.put(variable.getSimpleName(), args);
+                        }
                     }
                 }
             }
