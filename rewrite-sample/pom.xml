@@ -27,8 +27,6 @@
                 <configuration>
                     <activeRecipes>
                         <recipe>com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2</recipe>
-                        <recipe>com.azure.recipes.v2recipes.ContextRecipe</recipe>
-                        <recipe>com.azure.recipes.v2recipes.RetryOptionsConstructorRecipe</recipe>
                     </activeRecipes>
                 </configuration>
                 <dependencies>

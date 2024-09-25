@@ -1,4 +1,5 @@
-import com.azure.recipes.v2recipes.RetryOptionsConstructorRecipe;
+package com.azure.recipes.core.v2;
+
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
@@ -20,7 +21,8 @@ public class RetryOptionsConstructorTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new RetryOptionsConstructorRecipe());
+        spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
+                "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
     }
 
     /**
@@ -31,14 +33,14 @@ public class RetryOptionsConstructorTest implements RewriteTest {
         @Language("java") String before = "import com.azure.core.http.policy.RetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
         before += "\npublic class Testing {";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.http.policy.RetryOptions r = new RetryOptions(new FixedDelayOptions(3, Duration.ofMillis(50)));";
+        before += "\n    RetryOptions r = new RetryOptions(new FixedDelayOptions(3, Duration.ofMillis(50)));";
         before += "\n  }";
         before += "\n}";
 
         @Language("java") String after = "import io.clientcore.core.http.models.HttpRetryOptions;import java.time.Duration;import com.azure.core.http.policy.FixedDelayOptions;";
         after += "\npublic class Testing {";
         after += "\n  public Testing(){";
-        after += "\n     io.clientcore.core.http.models.HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
+        after += "\n    HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
         after += "\n  }";
         after += "\n}";
         rewriteRun(
@@ -57,7 +59,7 @@ public class RetryOptionsConstructorTest implements RewriteTest {
         before += "\npublic class Testing {";
         before += "\n  FixedDelayOptions f = new FixedDelayOptions(3, Duration.ofMillis(50));";
         before += "\n  public Testing(){";
-        before += "\n    com.azure.core.http.policy.RetryOptions r = new RetryOptions(f);";
+        before += "\n    RetryOptions r = new RetryOptions(f);";
         before += "\n  }";
         before += "\n}";
 
@@ -65,7 +67,7 @@ public class RetryOptionsConstructorTest implements RewriteTest {
         after += "\npublic class Testing {";
         after += "\n  FixedDelayOptions f = new FixedDelayOptions(3, Duration.ofMillis(50));";
         after += "\n  public Testing(){";
-        after += "\n     io.clientcore.core.http.models.HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
+        after += "\n    HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
         after += "\n  }";
         after += "\n}";
         rewriteRun(

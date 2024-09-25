@@ -10,7 +10,13 @@ recipeList:
   #    find: 'requires\s+(transitive\s+)?com\.azure\.core(?!\.v2)'
   #    replace: 'requires $1com.azure.core.v2'
   #    filePattern: '**/module-info.java'
+
+  # ----------------------------------
   #
+  # Java-Based LST Replacement Recipes
+  #
+  # ----------------------------------
+
   # Recipe that changes all instances of com.azure.core.http.rest.RequestOptions
   # to io.clientcore.core.http.models.RequestOptions
   - org.openrewrite.java.ChangeType:
@@ -22,3 +28,42 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.rest.Response
       newFullyQualifiedTypeName: io.clientcore.core.http.models.Response
+
+  # Recipe that changes all instances of com.azure.core.util.logging.ClientLogger
+  # to io.clientcore.core.util.ClientLogger
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.util.logging.ClientLogger
+      newFullyQualifiedTypeName: io.clientcore.core.util.ClientLogger
+
+  # Recipe to change com.azure.core.credential package name to io.clientcore.core.credential
+  - org.openrewrite.java.ChangePackage:
+        oldPackageName: com.azure.core.credential
+        newPackageName: io.clientcore.core.credential
+
+  # Recipes that update all instances of azure-core exceptions where
+  # use is equivalent and type/name change is sufficient/safe.
+  # Update to azure-core-v2 version
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.exception.ClientAuthenticationException
+      newFullyQualifiedTypeName: com.azure.core.v2.exception.ClientAuthenticationException
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.exception.ResourceModifiedException
+      newFullyQualifiedTypeName: com.azure.core.v2.exception.ResourceModifiedException
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.exception.ResourceNotFoundException
+      newFullyQualifiedTypeName: com.azure.core.v2.exception.ResourceNotFoundException
+  # Update to clientcore version
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.exception.HttpResponseException
+      newFullyQualifiedTypeName: io.clientcore.core.http.exception.HttpResponseException
+  # End azure-core-exception change type Recipes
+
+  # Recipe that changes all instances of com.azure.core.util.Configuration
+  # to io.clientcore.core.util.configuration.Configuration
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.azure.core.util.Configuration
+      newFullyQualifiedTypeName: io.clientcore.core.util.configuration.Configuration
+
+  - com.azure.recipes.core.v2.ContextRecipe
+  - com.azure.recipes.core.v2.RetryOptionsConstructorRecipe
+  - com.azure.recipes.core.v2.TypeReferenceRecipe
