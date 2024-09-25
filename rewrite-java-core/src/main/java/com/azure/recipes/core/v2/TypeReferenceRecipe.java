@@ -11,7 +11,9 @@ import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.TypeTree;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Recipe to convert TypeReference to ParameterizedType and remove TypeReference import statements.
@@ -107,34 +109,35 @@ public class TypeReferenceRecipe extends Recipe {
             return visitedNewClass;
         }
 
-        /**
-         * Method to remove TypeReference import and replace it with ParameterizedType.
-         * Also makes sure that no duplicate imports of ParameterizedType are created.
-         */
-        int count = 0;
+        private final Set<String> importSet = new HashSet<>();
 
         @Override
         public J.@NotNull Import visitImport(J.@NotNull Import importStmt, @NotNull ExecutionContext ctx) {
+            String importQualid = importStmt.getQualid().toString();
 
-            if (importStmt.getQualid().toString().equals("java.lang.reflect.ParameterizedType")) {
-                count ++;
-            }
-            if (importStmt.getQualid().toString().equals("java.lang.reflect.ParameterizedType") && count > 1) {
+            // Add the import to the set and check if it already exists
+            boolean isNewImport = importSet.add(importQualid);
+
+            // If the import is for ParameterizedType and it's already in the set, skip it
+            if (importQualid.equals("java.lang.reflect.ParameterizedType") && !isNewImport) {
                 return null;
             }
-            // Remove import statement for TypeReference and add import for ParameterizedType
-            if (importStmt.getQualid().toString().equals("com.azure.core.util.serializer.TypeReference")) {
-                return importStmt.withQualid(TypeTree.build(" java.lang.reflect.ParameterizedType"));
+
+            // Remove the import statement for TypeReference and add import for ParameterizedType
+            if (importQualid.equals("com.azure.core.util.serializer.TypeReference")) {
+                importSet.add("java.lang.reflect.ParameterizedType");
+                return importStmt.withQualid(TypeTree.build("java.lang.reflect.ParameterizedType"));
             }
 
-            if (importStmt.getQualid().toString().equals("com.azure.core.util.BinaryData")){
+            // Change BinaryData import to a new package
+            if (importQualid.equals("com.azure.core.util.BinaryData")) {
+                importSet.add("io.clientcore.core.util.binarydata.BinaryData");
                 return importStmt.withQualid(TypeTree.build(" io.clientcore.core.util.binarydata.BinaryData"));
             }
 
             // Return other imports normally
             return importStmt;
         }
-
         /**
          * Method to visit variable declaration for TypeReference and make sure it is converted to java.lang.reflect.Type
          */
