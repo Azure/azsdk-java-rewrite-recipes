@@ -70,8 +70,8 @@ recipeList:
   #    directory to reliably parse from clientcore library
 
   # --------------------------------------------------------------------
-  # Recipes to migrate implementations of com.azure.core.client.traits.HttpTrait
-  # to io.clientcore.core.models.traits.HttpTrait
+  # Recipes to migrate TextTranslationClientBuilder HttpTrait implemented
+  # methods and parameters
   # --------------------------------------------------------------------
   # Change Types from the azure-core to clientcore versions
   - org.openrewrite.java.ChangeType:
@@ -87,32 +87,21 @@ recipeList:
       newFullyQualifiedTypeName: io.clientcore.core.http.pipeline.HttpPipelinePolicy
       ignoreDefinition: false
 
-  # Recipe to transform clientOptions to httpRedirectOptions:
-    # preserves return type, updates method body and declaring class.
-    # Does not rename method
-  - com.azure.recipes.core.v2.ChangeClientOptionsParamsRecipe
   # Rename methods
+  # Alternatively, can target HttpTrait directly
   - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait clientOptions(..)
-      newMethodName: httpRedirectOptions
-      matchOverrides: true
-  - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait retryOptions(..)
+      methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder retryOptions(..)
       newMethodName: httpRetryOptions
       matchOverrides: true
   - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait pipeline(..)
+      methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder pipeline(..)
       newMethodName: httpPipeline
       matchOverrides: true
   - org.openrewrite.java.ChangeMethodName:
-      methodPattern: com.azure.core.client.traits.HttpTrait addPolicy(..)
+      methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder addPolicy(..)
       newMethodName: addHttpPipelinePolicy
       matchOverrides: true
- # Change HttpTrait Type to clientcore version
-  - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: com.azure.core.client.traits.HttpTrait
-      newFullyQualifiedTypeName: io.clientcore.core.models.traits.HttpTrait
-  # End HttpTrait recipes
+  # End TextTranslationClientBuilder - HttpTrait implementation recipes
 
   # Recipe to change com.azure.core.credential package name to io.clientcore.core.credential
   - org.openrewrite.java.ChangePackage:
