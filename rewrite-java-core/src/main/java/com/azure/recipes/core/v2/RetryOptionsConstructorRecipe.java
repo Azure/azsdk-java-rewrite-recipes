@@ -128,5 +128,17 @@ public class RetryOptionsConstructorRecipe extends Recipe {
             }
             return visitedFieldAccess;
         }
+
+        /**
+         * Method to change usages of retryOptions builder method to httpRetryOptions
+         */
+        @Override
+        public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext executionContext) {
+            J.MethodInvocation visitedMethodInv = super.visitMethodInvocation(method, executionContext);
+            if (visitedMethodInv.getSimpleName().equals("retryOptions")) {
+                return visitedMethodInv.withName(visitedMethodInv.getName().withSimpleName("httpRetryOptions"));
+            }
+            return visitedMethodInv;
+        }
     }
 }

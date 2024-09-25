@@ -56,10 +56,23 @@ public class HttpLogOptionsRecipe extends Recipe {
             if (fullyQualified.equals("com.azure.core.http.policy.HttpLogOptions")) {
                return TypeTree.build(" io.clientcore.core.http.models.HttpLogOptions");
             }
-            if (fullyQualified.equals("com.azure.core.http.policy.HttpLogDetailLevel") && visitedFieldAccess.getSimpleName().equals("HttpLogDetailLevel")){
+            if (fullyQualified.equals("com.azure.core.http.policy.HttpLogDetailLevel") &&
+                    visitedFieldAccess.getSimpleName().equals("HttpLogDetailLevel") &&
+                    visitedFieldAccess.print().contains("com.azure")){
                 return TypeTree.build(" io.clientcore.core.http.models.HttpLogOptions.HttpLogDetailLevel");
             }
             return visitedFieldAccess;
+        }
+        /**
+         * Method to remove unnecessary import fo HttpLogDetailLevel as the class is already included in client-core HttpLogOptions class
+         */
+        @Override
+        public J.Import visitImport(J.Import _import, ExecutionContext executionContext) {
+            J.Import visitedImport = super.visitImport(_import, executionContext);
+            if (visitedImport.getQualid().getSimpleName().contains("HttpLogDetailLevel")){
+                return null;
+            }
+            return visitedImport;
         }
     }
 }
