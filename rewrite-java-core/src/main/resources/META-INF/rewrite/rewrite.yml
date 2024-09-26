@@ -138,6 +138,9 @@ recipeList:
   - com.azure.recipes.core.v2.HttpLogOptionsRecipe
   - com.azure.recipes.core.v2.RemoveFixedDelayRecipe
 
+  # Recipe to re-order imports to match standard conventions
+  - org.openrewrite.java.OrderImports
+
   # ----------------------------------
   #
   # Text-Based Replacement Recipes
