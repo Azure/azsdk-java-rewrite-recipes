@@ -37,7 +37,7 @@ public class RetryOptionsConstructorTest implements RewriteTest {
         before += "\n  }";
         before += "\n}";
 
-        @Language("java") String after = "import io.clientcore.core.http.models.HttpRetryOptions;import java.time.Duration;";
+        @Language("java") String after = "import io.clientcore.core.http.models.HttpRetryOptions;\n\nimport java.time.Duration;\n";
         after += "\npublic class Testing {";
         after += "\n  public Testing(){";
         after += "\n    HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
@@ -63,7 +63,7 @@ public class RetryOptionsConstructorTest implements RewriteTest {
         before += "\n  }";
         before += "\n}";
 
-        @Language("java") String after = "import io.clientcore.core.http.models.HttpRetryOptions;import java.time.Duration;";
+        @Language("java") String after = "import io.clientcore.core.http.models.HttpRetryOptions;\n\nimport java.time.Duration;\n";
         after += "\npublic class Testing {";
         after += "\n  public Testing(){";
         after += "\n    HttpRetryOptions r = new HttpRetryOptions(3, Duration.ofMillis(50));";
