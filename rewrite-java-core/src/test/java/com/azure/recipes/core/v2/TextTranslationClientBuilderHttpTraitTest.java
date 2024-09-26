@@ -1,7 +1,6 @@
 package com.azure.recipes.core.v2;
 
 import org.intellij.lang.annotations.Language;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
@@ -13,7 +12,6 @@ import static org.openrewrite.java.Assertions.java;
  * HttpTraitTest tests interface migration from com.azure.core.client.traits.HttpTrait
  * to io.clientcore.core.models.traits.HttpTrait.
  * Tests simple method renaming with declarative recipe.
- * CURRENTLY UNFINISHED. All tests for HttpTrait migration will be added here.
  * @author Annabelle Mittendorf Smith
  */
 
