@@ -86,7 +86,7 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.http.policy.HttpPipelinePolicy
       newFullyQualifiedTypeName: io.clientcore.core.http.pipeline.HttpPipelinePolicy
       ignoreDefinition: false
-
+ 
   # Rename methods
   # Alternatively, can target HttpTrait directly
   - org.openrewrite.java.ChangeMethodName:
