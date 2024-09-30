@@ -31,7 +31,7 @@ public class HttpLogOptionsRecipe extends Recipe {
      */
     @Override
     public @NotNull String getDescription() {
-        return "This recipe changes any usages of HttpLogOptions from azure core v1 to the correct type from azure core v2.\n" +
+        return "This recipe changes any usages of HttpLogOptions from azure core v1 to its respective type from azure core v2.\n" +
                 "It also migrates any usages of HttpLogDetailLevel to azure core v2.";
     }
     /**

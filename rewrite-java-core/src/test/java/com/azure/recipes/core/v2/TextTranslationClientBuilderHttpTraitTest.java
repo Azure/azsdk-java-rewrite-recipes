@@ -34,7 +34,7 @@ public class TextTranslationClientBuilderHttpTraitTest implements RewriteTest {
      * and complex rename of clientOptions to httpRedirectOptions
      */
     @Test
-    void test_methodsRenamed_successful() {
+    void testMethodsRenamedSuccessful() {
         @Language("java") String before = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
                 "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
                 "\n" +
@@ -69,7 +69,7 @@ public class TextTranslationClientBuilderHttpTraitTest implements RewriteTest {
 
 
     @Test
-    void test_uninitializedParams_and_imports_changed() {
+    void testUninitializedParamsAndImportsChanged() {
         @Language("java") String before = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
                 "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
                 "import com.azure.core.http.HttpClient;\n" +
@@ -131,7 +131,7 @@ public class TextTranslationClientBuilderHttpTraitTest implements RewriteTest {
 
 
     @Test
-    void test_likeSampleImplementation_changed() {
+    void testLikeSampleImplementationChanged() {
         @Language("java") String before = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
                 "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
                 "import com.azure.core.credential.AzureKeyCredential;\n" +

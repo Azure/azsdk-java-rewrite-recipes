@@ -60,11 +60,12 @@ public class RemoveFixedDelayRecipe extends Recipe {
         @Override
         public J.VariableDeclarations visitVariableDeclarations(J.VariableDeclarations multiVariable, ExecutionContext executionContext) {
             J.VariableDeclarations visitedVar = super.visitVariableDeclarations(multiVariable, executionContext);
-            if (visitedVar.getTypeExpression() != null) {
-                if (visitedVar.getTypeExpression().toString().contains("FixedDelayOptions")) {
-                    // Return null to remove the block
-                    return null;
-                }
+            if (visitedVar.getTypeExpression() == null) {
+                return visitedVar;
+            }
+            if (visitedVar.getTypeExpression().toString().contains("FixedDelayOptions")) {
+                // Return null to remove the block
+                return null;
             }
             return visitedVar;
         }
