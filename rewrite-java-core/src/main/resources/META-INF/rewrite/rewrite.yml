@@ -19,48 +19,80 @@ recipeList:
 
   # Recipe that changes all instances of com.azure.core.http.rest.RequestOptions
   # to io.clientcore.core.http.models.RequestOptions
+  # Before:
+  # import com.azure.core.http.rest.RequestOptions;
+  # After:
+  # import io.clientcore.core.http.models.RequestOptions;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.rest.RequestOptions
       newFullyQualifiedTypeName: io.clientcore.core.http.models.RequestOptions
 
   # Recipe that changes all instances of com.azure.core.http.rest.Response
   # to io.clientcore.core.http.models.Response
+  # Before:
+  # import com.azure.core.http.rest.Response;
+  # After:
+  # import io.clientcore.core.http.models.Response;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.rest.Response
       newFullyQualifiedTypeName: io.clientcore.core.http.models.Response
 
   # Recipe that changes all instances of com.azure.core.http.HttpHeaderName
   # to io.clientcore.core.http.models.HttpHeaderName
+  # Before:
+  # import com.azure.core.http.HttpHeaderName;
+  # After:
+  # import io.clientcore.core.http.models.HttpHeaderName;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.HttpHeaderName
       newFullyQualifiedTypeName: io.clientcore.core.http.models.HttpHeaderName
 
   # Recipe that changes all instances of com.azure.core.util.logging.ClientLogger
   # to io.clientcore.core.util.ClientLogger
+  # Before:
+  # import com.azure.core.util.logging.ClientLogger;
+  # After:
+  # import io.clientcore.core.util.ClientLogger;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.util.logging.ClientLogger
       newFullyQualifiedTypeName: io.clientcore.core.util.ClientLogger
 
   # Recipe that changes all instances of com.azure.core.util.CoreUtils
   # to com.azure.core.v2.util.CoreUtils
+  # Before:
+  # import com.azure.core.util.CoreUtils;
+  # After:
+  # import com.azure.core.v2.util.CoreUtils;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.util.CoreUtils
       newFullyQualifiedTypeName: com.azure.core.v2.util.CoreUtils
 
   # Recipe that changes all instances of com.azure.core.http.policy.KeyCredentialPolicy
   # to io.clientcore.core.http.pipeline.KeyCredentialPolicy
+  # Before:
+  # import com.azure.core.http.policy.KeyCredentialPolicy;
+  # After:
+  # import io.clientcore.core.http.pipeline.KeyCredentialPolicy;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.policy.KeyCredentialPolicy
       newFullyQualifiedTypeName: io.clientcore.core.http.pipeline.KeyCredentialPolicy
 
   # Recipe that changes all instances of com.azure.core.credential.KeyCredential
   # to io.clientcore.core.credential.KeyCredential
+  # Before:
+  # import com.azure.core.credential.KeyCredential;
+  # After:
+  # import io.clientcore.core.credential.KeyCredential;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.credential.KeyCredential
       newFullyQualifiedTypeName: io.clientcore.core.credential.KeyCredential
 
   # Recipe that changes all instances of com.azure.core.client.traits.KeyCredentialTrait
   # to io.clientcore.core.models.traits.KeyCredentialTrait
+  # Before:
+  # import com.azure.core.client.traits.KeyCredentialTrait;
+  # After:
+  # import io.clientcore.core.models.traits.KeyCredentialTrait;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.client.traits.KeyCredentialTrait
       newFullyQualifiedTypeName: io.clientcore.core.models.traits.KeyCredentialTrait
@@ -74,14 +106,26 @@ recipeList:
   # methods and parameters
   # --------------------------------------------------------------------
   # Change Types from the azure-core to clientcore versions
+  # Before:
+  # import com.azure.core.http.HttpClient;
+  # After:
+  # import io.clientcore.core.http.client.HttpClient;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.HttpClient
       newFullyQualifiedTypeName: io.clientcore.core.http.client.HttpClient
       ignoreDefinition: false
+  # Before:
+  # import com.azure.core.http.HttpPipeline;
+  # After:
+  # import io.clientcore.core.http.pipeline.HttpPipeline;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.HttpPipeline
       newFullyQualifiedTypeName: io.clientcore.core.http.pipeline.HttpPipeline
       ignoreDefinition: false
+  # Before:
+  # import com.azure.core.http.policy.HttpPipelinePolicy;
+  # After:
+  # import io.clientcore.core.http.pipeline.HttpPipelinePolicy;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.http.policy.HttpPipelinePolicy
       newFullyQualifiedTypeName: io.clientcore.core.http.pipeline.HttpPipelinePolicy
@@ -105,22 +149,38 @@ recipeList:
 
   # Recipe to change com.azure.core.credential package name to io.clientcore.core.credential
   - org.openrewrite.java.ChangePackage:
-        oldPackageName: com.azure.core.credential
-        newPackageName: io.clientcore.core.credential
+      oldPackageName: com.azure.core.credential
+      newPackageName: io.clientcore.core.credential
 
   # Recipes that update all instances of azure-core exceptions where
   # use is equivalent and type/name change is sufficient/safe.
   # Update to azure-core-v2 version
+  # Before:
+  # import com.azure.core.exception.ClientAuthenticationException;
+  # After:
+  # import com.azure.core.v2.exception.ClientAuthenticationException;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.exception.ClientAuthenticationException
       newFullyQualifiedTypeName: com.azure.core.v2.exception.ClientAuthenticationException
+  # Before:
+  # import com.azure.core.exception.ResourceModifiedException;
+  # After:
+  # import com.azure.core.v2.exception.ResourceModifiedException;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.exception.ResourceModifiedException
       newFullyQualifiedTypeName: com.azure.core.v2.exception.ResourceModifiedException
+  # Before:
+  # import com.azure.core.exception.ResourceNotFoundException;
+  # After:
+  # import com.azure.core.v2.exception.ResourceNotFoundException;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.exception.ResourceNotFoundException
       newFullyQualifiedTypeName: com.azure.core.v2.exception.ResourceNotFoundException
   # Update to clientcore version
+  # Before:
+  # import com.azure.core.exception.HttpResponseException;
+  # After:
+  # import io.clientcore.core.http.exception.HttpResponseException;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.exception.HttpResponseException
       newFullyQualifiedTypeName: io.clientcore.core.http.exception.HttpResponseException
@@ -128,6 +188,10 @@ recipeList:
 
   # Recipe that changes all instances of com.azure.core.util.Configuration
   # to io.clientcore.core.util.configuration.Configuration
+  # Before:
+  # import com.azure.core.util.Configuration;
+  # After:
+  # import io.clientcore.core.util.configuration.Configuration;
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.azure.core.util.Configuration
       newFullyQualifiedTypeName: io.clientcore.core.util.configuration.Configuration
