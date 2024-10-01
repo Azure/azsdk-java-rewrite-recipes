@@ -101,13 +101,13 @@ public class TextTranslationClientBuilderHttpTraitTest implements RewriteTest {
 
         @Language("java") String after = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
                 "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
+                "import io.clientcore.core.http.client.HttpClient;\n" +
                 "import io.clientcore.core.http.models.HttpLogOptions;\n" +
                 "import io.clientcore.core.http.models.HttpRetryOptions;\n" +
-                "import io.clientcore.core.http.client.HttpClient;\n" +
                 "import io.clientcore.core.http.pipeline.HttpPipeline;\n" +
                 "import io.clientcore.core.http.pipeline.HttpPipelinePolicy;\n" +
                 "\n" +
-                "public class UserClass{\n" +
+                "public class UserClass {\n" +
                 "    \n" +
                 "    HttpClient client;\n" +
                 "    HttpPipeline pipeline;\n" +
@@ -157,7 +157,7 @@ public class TextTranslationClientBuilderHttpTraitTest implements RewriteTest {
                 "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
                 "import io.clientcore.core.credential.AzureKeyCredential;\n" +
                 "import io.clientcore.core.http.models.HttpLogOptions;\n" +
-                "import io.clientcore.core.http.models.HttpRetryOptions;\n" +
+                "import io.clientcore.core.http.models.HttpRetryOptions;\n\n" +
                 "import java.time.Duration;\n" +
                 "\n" +
                 "public class UserClass {\n" +

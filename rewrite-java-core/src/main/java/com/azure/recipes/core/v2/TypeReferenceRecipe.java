@@ -119,14 +119,14 @@ public class TypeReferenceRecipe extends Recipe {
             boolean isNewImport = importSet.add(importQualid);
 
             // If the import is for ParameterizedType and it's already in the set, skip it
-            if (importQualid.equals("java.lang.reflect.ParameterizedType") && !isNewImport) {
+            if (importQualid.equals(" java.lang.reflect.ParameterizedType") && !isNewImport) {
                 return null;
             }
 
             // Remove the import statement for TypeReference and add import for ParameterizedType
             if (importQualid.equals("com.azure.core.util.serializer.TypeReference")) {
                 importSet.add("java.lang.reflect.ParameterizedType");
-                return importStmt.withQualid(TypeTree.build("java.lang.reflect.ParameterizedType"));
+                return importStmt.withQualid(TypeTree.build(" java.lang.reflect.ParameterizedType"));
             }
 
             // Change BinaryData import to a new package
