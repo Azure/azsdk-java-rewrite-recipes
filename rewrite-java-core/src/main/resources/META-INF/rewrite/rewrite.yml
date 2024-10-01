@@ -147,12 +147,6 @@ recipeList:
   #
   # ----------------------------------
 
-  # Recipe to replace retryOptions argument in httpRetryOptions HttpTrait method
-  # to httpRetryOptions
-  - org.openrewrite.text.FindAndReplace:
-      find: 'httpRetryOptions(HttpRetryOptions retryOptions)'
-      replace: 'httpRetryOptions(HttpRetryOptions httpRetryOptions)'
-
   # Recipe to replace HttpLogDetailLevel call with HttpLogOptions.HttpLogDetailLevel
   - org.openrewrite.text.FindAndReplace:
       find: '(?<!\.)[\w]*[\s]*HttpLogDetailLevel'
