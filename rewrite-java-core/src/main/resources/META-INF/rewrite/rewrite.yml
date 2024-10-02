@@ -148,6 +148,10 @@ recipeList:
   # End TextTranslationClientBuilder - HttpTrait implementation recipes
 
   # Recipe to change com.azure.core.credential package name to io.clientcore.core.credential
+  # Before:
+  # import com.azure.core.credential.*;
+  # After:
+  # import io.clientcore.core.credential.*;
   - org.openrewrite.java.ChangePackage:
       oldPackageName: com.azure.core.credential
       newPackageName: io.clientcore.core.credential
