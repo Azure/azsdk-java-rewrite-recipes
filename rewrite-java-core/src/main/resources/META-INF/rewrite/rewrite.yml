@@ -212,6 +212,10 @@ recipeList:
   # ----------------------------------
 
   # Recipe to replace HttpLogDetailLevel call with HttpLogOptions.HttpLogDetailLevel
+  # Before:
+  # HttpLogDetailLevel.BODY_AND_HEADERS
+  # After:
+  # HttpLogOptions.HttpLogDetailLevel.BODY_AND_HEADERS
   - org.openrewrite.text.FindAndReplace:
       find: '(?<!\.)[\w]*[\s]*HttpLogDetailLevel'
       replace: 'HttpLogOptions.HttpLogDetailLevel'
