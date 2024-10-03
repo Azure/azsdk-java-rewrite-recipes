@@ -11,6 +11,17 @@ import org.openrewrite.java.tree.TypeTree;
 /**
  * ContextRecipe changes all instances of Context.NONE (from azure core v1) to Context.none() (from azure core v2).
  * This recipe also updates the import statements for the aforementioned class.
+ * --------------------------------------------------
+ * Before applying this recipe:
+ * import com.azure.core.util.Context;
+ * ...
+ * public void context(){ print(Context.NONE); }
+ * --------------------------------------------------
+ * After applying this recipe:
+ * import io.clientcore.core.util.Context;
+ * ...
+ * public void context(){ print(Context.none()); }
+ * --------------------------------------------------
  * @author Ali Soltanian Fard Jahromi
  */
 public class ContextRecipe extends Recipe {

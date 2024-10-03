@@ -17,6 +17,17 @@ import java.util.Map;
  * RetryOptionsRecipe changes RetryOptions constructor to HttpRetryOptions constructor.
  * It also removes any references to FixedDelay and ExponentialDelay and changes
  * com.azure.core.http.policy.RetryOptions to io.clientcore.core.http.models.HttpRetryOptions
+ * --------------------------------------------------
+ * Before applying this recipe:
+ * import com.azure.core.http.policy.RetryOptions;
+ * ...
+ * new RetryOptions(new FixedDelayOptions(3, Duration.ofMillis(50)))
+ * --------------------------------------------------
+ * After applying this recipe:
+ * import io.clientcore.core.http.models.HttpRetryOptions;
+ * ...
+ * new HttpRetryOptions(3, Duration.ofMillis(50))
+ * --------------------------------------------------
  * @author Ali Soltanian Fard Jahromi
  */
 public class RetryOptionsConstructorRecipe extends Recipe {

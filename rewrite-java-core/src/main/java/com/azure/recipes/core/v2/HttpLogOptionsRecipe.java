@@ -9,11 +9,24 @@ import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.TypeTree;
 
 /**
- * HttpLogOptionsRecipe change usage of the com.azure.core.http.policy.HttpLogDetailLevel while also changing the com.azure.core.http.policy.HttpLogOptions Type.
+ * HttpLogOptionsRecipe change usage of the com.azure.core.http.policy.HttpLogDetailLevel while also changing
+ * the com.azure.core.http.policy.HttpLogOptions Type.
  * The import statements are also updated.
  * Changes:
  * com.azure.core.http.policy.HttpLogDetailLevel -> io.clientcore.core.http.models.HttpLogOptions.HttpLogDetailLevel
  * com.azure.core.http.policy.HttpLogOptions     -> io.clientcore.core.http.models.HttpLogOptions
+ * --------------------------------------------------
+ * Before applying this recipe:
+ * import com.azure.core.http.policy.HttpLogDetailLevel;
+ * import com.azure.core.http.policy.HttpLogOptions;
+ * ...
+ * public void logOptions(){ print(new HttpLogOptions().setLogLevel(HttpLogDetailLevel.BODY_AND_HEADERS)); }
+ * --------------------------------------------------
+ * After applying this recipe:
+ * import io.clientcore.core.http.models.HttpLogOptions;
+ * ...
+ * public void logOptions(){ print(new HttpLogOptions().setLogLevel(HttpLogOptions.HttpLogDetailLevel.BODY_AND_HEADERS)); }
+ * --------------------------------------------------
  * @author Ali Soltanian Fard Jahromi
  */
 public class HttpLogOptionsRecipe extends Recipe {

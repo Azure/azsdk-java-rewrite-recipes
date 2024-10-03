@@ -17,6 +17,33 @@ import java.util.Set;
 
 /**
  * Recipe to convert TypeReference to ParameterizedType and remove TypeReference import statements.
+ * --------------------------------------------------
+ * Before applying this recipe:
+ * import com.azure.core.util.serializer.TypeReference;
+ * ...
+ *  result = binaryDataResponse.getValue().toObject(new TypeReference<List<TranslatedTextItem>>() { });
+ * --------------------------------------------------
+ * After applying this recipe:
+ * import java.lang.reflect.ParameterizedType;
+ * import java.lang.reflect.Type;
+ * ...
+    result = binaryDataResponse.getValue().toObject(new ParameterizedType() {
+    @Override
+    public Type getRawType() {
+    return List.class;
+    }
+
+    @Override
+    public Type[] getActualTypeArguments() {
+    return new Type[]{TranslatedTextItem.class};
+    }
+
+    @Override
+    public Type getOwnerType() {
+    return null;
+    }
+    });
+ * --------------------------------------------------
  * @author Ali Soltanian Fard Jahromi
  */
 public class TypeReferenceRecipe extends Recipe {
