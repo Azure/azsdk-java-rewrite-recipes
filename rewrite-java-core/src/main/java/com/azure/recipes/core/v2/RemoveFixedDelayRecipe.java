@@ -10,6 +10,12 @@ import org.openrewrite.java.tree.J;
 /**
  * RemoveFixedDelayRecipe removes any leftover imports for FixedDelayOptions
  * and any variables declared with the FixedDelayOptions type.
+ * --------------------------------------------------
+ * Removes code such as:
+ * import com.azure.core.http.policy.FixedDelayOptions;
+ * ...
+ * FixedDelayOptions s;
+ * --------------------------------------------------
  * @author Ali Soltanian Fard Jahromi
  */
 public class RemoveFixedDelayRecipe extends Recipe {
@@ -19,7 +25,7 @@ public class RemoveFixedDelayRecipe extends Recipe {
      */
     @Override
     public @NotNull String getDisplayName() {
-        return "Migrate the HttpLogOptions and HttpLogDetail usages";
+        return "Removes imports and variable declarations for FixedDelayOptions";
     }
     /**
      * Method to return a description of RemoveFixedDelayRecipe
