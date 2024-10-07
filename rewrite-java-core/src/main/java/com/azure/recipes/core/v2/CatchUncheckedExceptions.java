@@ -4,18 +4,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import org.openrewrite.*;
+import org.openrewrite.internal.ListUtils;
 import org.openrewrite.internal.lang.NonNull;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.JavaTemplate;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.TreeVisitingPrinter;
-import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.*;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * 1. Find target method invocation and thrown exception
@@ -47,7 +54,7 @@ public class CatchUncheckedExceptions extends Recipe {
 
     @Option(displayName = "Catch e template",
             description = "The code snippet to be executed in the catch block",
-            example = "e.printStackTrace(); return;")
+            example = "catch (IOException e) { e.printStackTrace(); }")
     @NonNull
     String catchTemplateString;
 
@@ -58,8 +65,7 @@ public class CatchUncheckedExceptions extends Recipe {
     @JsonCreator
     public CatchUncheckedExceptions(@NonNull @JsonProperty("methodPattern") String methodPattern,
                                     @Nullable @JsonProperty("matchOverrides") Boolean matchOverrides,
-                                    @NonNull @JsonProperty("catchTemplateString") String catchTemplateString)
-    {
+                                    @NonNull @JsonProperty("catchTemplateString") String catchTemplateString) {
         this.methodPattern = methodPattern;
         this.matchOverrides = matchOverrides;
         this.catchTemplateString = catchTemplateString;
@@ -94,130 +100,114 @@ public class CatchUncheckedExceptions extends Recipe {
 
         private final MethodMatcher methodMatcher = new MethodMatcher(methodPattern, matchOverrides);
 
-        private JavaTemplate catchTemplate = JavaTemplate.builder(catchTemplateString)
-                .contextSensitive()
+        private String fullyQualifiedExceptionName = "java.io.IOException";
+
+        private final JavaTemplate tryBlocKTemplate = JavaTemplate.builder(
+                "try{#{};} "    //#{}  catch (IOException e) { e.printStackTrace(); }
+        ).contextSensitive().build();
+
+        private final JavaTemplate catchTemplate = JavaTemplate.builder(catchTemplateString)
+                //.contextSensitive()
                 .build();
+        //private final JavaTemplate catchTemplate
+
+        private final JavaTemplate fullTemplate = JavaTemplate.builder("try{ #{}; } catch (IOException e) { e.printStackTrace(); }").contextSensitive().build();
         /*
         .javaParser(JavaParser.fromJavaVersion().classpathFromResources(context, "core-1.0.0-beta.1"))
                     .contextSensitive()
                     .imports("io.clientcore.core.http.models.HttpRedirectOptions")
 
          */
-        @Override
-        public J.@NotNull ClassDeclaration visitClassDeclaration(J.@NotNull ClassDeclaration classDeclaration, @NotNull ExecutionContext ctx) {
-            J.ClassDeclaration cd = super.visitClassDeclaration(classDeclaration, ctx);
-            System.out.println(TreeVisitingPrinter.printTree(getCursor()));
 
-            // Return unchanged if method is not found in this class.
-            J.MethodDeclaration methodDeclaration = getCursor().pollMessage("FOUND_METHOD");
-            if (methodDeclaration == null) { return cd; }
-
-
-            // Copy and remove the method instance
-
-            // Add appropriate try-catch block
-
-            // With method call inside
-                // Include variable naming
-
-            // maybe add import
-            return cd;
-        }
 
         /**
-         * Visitor methods to find and label method uses.
+         * perform any changes in the containing code block
+         *
+         * @param block
+         * @param context
+         * @return
          */
-
-        // Maybe methodCall visitor??
-
-
         @Override
-        public J.@NotNull MethodInvocation visitMethodInvocation(J.@NotNull MethodInvocation methodInvocation, @NotNull ExecutionContext context) {
-            J.MethodInvocation method = super.visitMethodInvocation(methodInvocation, context);
-            // If the method matches, add a message to the declaring class
-            if (methodMatcher.matches(method)) {
-                getCursor().putMessageOnFirstEnclosing(J.ClassDeclaration.class, "FOUND_METHOD", method);
-            }
-            return method;
-        }
+        public J.Block visitBlock(J.Block block, ExecutionContext context) {
+            J.Block body = super.visitBlock(block, context);
+            J.MethodInvocation method = getCursor().pollMessage("FOUND_BLOCK");
+            if (method == null) return body;
 
-        @Override
-        public J.@NotNull MemberReference visitMemberReference(J.@NotNull MemberReference memberRef, @NotNull ExecutionContext context) {
-            J.MemberReference member = super.visitMemberReference(memberRef, context);
-            // If the method matches, add a message to the declaring class
-            if (methodMatcher.matches(member)) {
-                getCursor().putMessageOnFirstEnclosing(J.ClassDeclaration.class, "FOUND_METHOD", member);
-            }
-            return member;
-        }
+            J.Try _try = getCursor().pollMessage("FOUND_TRY");
+            if (_try != null && _try.getBody().getStatements().contains(method)) return body;
+            //if (!body.getStatements().contains(method)) return body;
 
-        @Override
-        public J.@NotNull NewClass visitNewClass(J.@NotNull NewClass newClass, @NotNull ExecutionContext context) {
-            J.NewClass nc = super.visitNewClass(newClass, context);
-            // If the method matches, add a message to the declaring class
-            if (methodMatcher.matches(nc)) {
-                getCursor().putMessageOnFirstEnclosing(J.ClassDeclaration.class, "FOUND_METHOD", nc);
-            }
-            return nc;
-        }
-    }
+//            Tree temp =  getCursor().getParentTreeCursor().getValue();
+//            System.out.println(temp);
+//            if (temp instanceof J.Try) {
+//                System.out.println("temp == Try");
+//                //J.Try _try = getCursor().getParentTreeCursor().pollMessage("FOUND_TRY");
+////            System.out.println(getCursor().getParent().getValue().toString());
+//                J.Try _try = (J.Try) temp;
+//                if (_try.getBody().getStatements().contains(method)) {
+//                    if (_try.getCatches().stream().anyMatch(
+//                            _catch -> Objects.requireNonNull(_catch.getParameter().getType()).isAssignableFrom(
+//                                    Pattern.compile(fullyQualifiedExceptionName)))) {
+//                        System.out.println("Exception caught in try");
+//                        return body;
+//                    }
+//                }
+//            }
+//
 
-    /*
-    TODO
-    find method invocation
-    find throws
-    find parent
-    find if in try
-    find if catch handles it
+            // Else put method into a try catch block
 
-    add try to parent
-    add method invocation to try
-    add catch block to try with appropriate exception
-
-    if try and catch already exists, add exception to catch
-
-     */
-}
-
-/*
-https://github.com/openrewrite/rewrite-static-analysis/blob/main/src/main/java/org/openrewrite/staticanalysis/UnnecessaryCatch.java
-
-@Override
-            public J.Block visitBlock(J.Block block, ExecutionContext ctx) {
-                J.Block b = super.visitBlock(block, ctx);
-                return b.withStatements(ListUtils.flatMap(b.getStatements(), statement -> {
-                    if (statement instanceof J.Try) {
-                        // if a try has no catches, no finally, and no resources get rid of it and merge its statements into the current block
-                        J.Try aTry = (J.Try) statement;
-                        if (aTry.getCatches().isEmpty() && aTry.getResources() == null && aTry.getFinally() == null) {
-                            return ListUtils.map(aTry.getBody().getStatements(), tryStat -> autoFormat(tryStat, ctx, getCursor()));
+            System.out.println("apply template");
+            body = fullTemplate.apply(getCursor(), method.getCoordinates().after(), method.toString());
+            //body.getStatements().remove(method);
+            body = body.withStatements(ListUtils.map(
+                    body.getStatements(), statement -> {
+                        if (statement instanceof J.MethodInvocation) {
+                            if (methodMatcher.matches(((J.MethodInvocation) statement).getMethodType()))
+                                return null;
                         }
+                        return statement;
                     }
-                    return statement;
-                }));
-            }
+            ));
 
 
-List<JavaType.FullyQualified> thrownExceptions = new ArrayList<>();
-                AtomicBoolean missingTypeInformation = new AtomicBoolean(false);
-                //Collect any checked exceptions thrown from the try block.
-                new JavaIsoVisitor<Integer>() {
-                    @Override
-                    public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, Integer integer) {
-                        JavaType.Method methodType = method.getMethodType();
-                        if (methodType == null) {
-                            //Do not make any changes if there is missing type information.
-                            missingTypeInformation.set(true);
-                        } else {
-                            thrownExceptions.addAll(methodType.getThrownExceptions());
-                        }
-                        return super.visitMethodInvocation(method, integer);
+            return body;
+        }
+
+
+        /**
+         * Find the method
+         *
+         */
+        @Override
+        public J.MethodInvocation visitMethodInvocation(J.@NotNull MethodInvocation method, @NotNull ExecutionContext context) {
+            //J.MethodInvocation method = super.visitMethodInvocation(methodInvocation, context);
+            // If the method matches
+            if (!methodMatcher.matches(method)) return method;
+
+            // If the parent is a try block
+            // Only working for method invocation
+            Tree temp = getCursor().getParentTreeCursor().getParentTreeCursor().getValue();
+            System.out.println(temp);
+            if (temp instanceof J.Try) {
+                System.out.println("temp == Try");
+//            System.out.println(getCursor().getParent().getValue().toString());
+                J.Try _try = (J.Try) temp;
+                if (_try.getBody().getStatements().contains(method)) {
+                    if (_try.getCatches().stream().anyMatch(
+                            _catch -> Objects.requireNonNull(_catch.getParameter().getType()).isAssignableFrom(
+                                    Pattern.compile(fullyQualifiedExceptionName)))) {
+                        System.out.println("Exception caught in try");
+                        getCursor().putMessageOnFirstEnclosing(J.Block.class, "FOUND_TRY", _try);
+                        return method;
                     }
-                }.visit(t.getBody(), 0);
-
-                //If there is any missing type information, it is not safe to make any transformations.
-                if (missingTypeInformation.get()) {
-                    return t;
                 }
+            }
+            getCursor().putMessageOnFirstEnclosing(J.Block.class, "FOUND_BLOCK", method);
+            getCursor().putMessageOnFirstEnclosing(J.Try.class, "FOUND_METHOD", method);
 
- */
+            return method;
+        } // end methodVisitor
+    } // end catchUncheckedVisitor
+
+}

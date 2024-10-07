@@ -22,47 +22,79 @@ public class CatchUncheckedExceptionsTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new RemoveMethodDeclaration("UserClass myMethod(..)", true));
+        spec.recipes(new CatchUncheckedExceptions("UserClass myMethod(..)", true,"e.printStackTrace();"));
     }
 
     @Test
-    void test() {
+    void test_wrapSimpleMethod() {
         @Language("java") String before ="import java.io.IOException;\n" +
                 "\n" +
                 "public class UserClass {\n" +
                 "    \n" +
-                "    private void myMethod() throws IOException {\n" +
-                "        \n" +
+                "    private void myMethod() {\n" + // throws IOException
+                "       int a = 1 + 1;\n" +
                 "    }\n" +
-
-                "    private void myMethod3(){\n" +
-                "        try {\n" +
-                "            myMethod();\n" +
-                "        } catch (IOException e) {\n" +
-                "            e.printStackTrace();\n" +
-                "        }\n" +
-                "        \n" +
-                "    }" +
+                "    \n" +
+                "    private void anotherMethod(){\n" +
+                "       int b = 2 + 2;\n" +
+                "       myMethod();\n" +
+                "    }\n" +
                 "}\n";
 
         @Language("java") String after = "import java.io.IOException;\n" +
                 "\n" +
                 "public class UserClass {\n" +
                 "    \n" +
-                "    private void myMethod() throws IOException {\n" +
-                "        \n" +
+                "    private void myMethod() {\n" + // throws IOException
+                "       int a = 1 + 1;\n" +
                 "    }\n" +
-                "    private void myMethod2(){\n" +
-              //  "        myMethod();\n" +
-                "    }\n" +
-                "    private void myMethod3(){\n" +
+                "    \n" +
+                "    private void anotherMethod(){\n" +
+                "       int b = 2 + 2;\n" +
                 "        try {\n" +
                 "            myMethod();\n" +
                 "        } catch (IOException e) {\n" +
                 "            e.printStackTrace();\n" +
                 "        }\n" +
-                "        \n" +
-                "    }" +
+                "    }\n" +
+                "}\n";
+
+        rewriteRun(
+                java(before,after)
+        );
+    }
+
+    @Test
+    void test_wrapMethodWithReturn() {
+        @Language("java") String before ="import java.io.IOException;\n" +
+                "\n" +
+                "public class UserClass {\n" +
+                "    \n" +
+                "    private int myMethod() {\n" + // throws IOException
+                "       return 1 + 1;\n" +
+                "    }\n" +
+                "    \n" +
+                "    private void anotherMethod(){\n" +
+                "       int b = myMethod();\n" +
+                "    }\n" +
+                "}\n";
+
+        @Language("java") String after = "import java.io.IOException;\n" +
+                "\n" +
+                "public class UserClass {\n" +
+                "    \n" +
+                "    private int myMethod() {\n" + // throws IOException
+                "       return a = 2 + 2;\n" +
+                "    }\n" +
+                "    \n" +
+                "    private void anotherMethod(){\n" +
+                "       int b;\n" +
+                "        try {\n" +
+                "            b = myMethod();\n" +
+                "        } catch (IOException e) {\n" +
+                "            e.printStackTrace();\n" +
+                "        }\n" +
+                "    }\n" +
                 "}\n";
 
         rewriteRun(
