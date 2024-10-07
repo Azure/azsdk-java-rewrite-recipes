@@ -2,27 +2,17 @@ package com.azure.recipes.core.v2;
 
 import java.io.IOException;
 
-public class UserClass {
+        public class UserClass {
+            public UserClass(){}
+            String s = "Hello";
 
-    private int myMethod() throws IOException {
-return 1;
-    }
-    private void myMethod2(){
-        int a = 0;
-        try {
-            a = myMethod();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            public String myMethod() {
+               return s;
+            }
         }
-
-        int b = a;
-    }
-    private void myMethod3(){
-        try {
-            myMethod();
-        } catch (IOException e) {
-            e.printStackTrace();
+        class UserClass2 {
+            public void myMethod2() {
+                UserClass c = new UserClass();
+                String s2 = c.myMethod();
+            }
         }
-
-    }
-}

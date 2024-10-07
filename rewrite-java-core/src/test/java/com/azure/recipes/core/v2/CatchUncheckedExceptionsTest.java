@@ -26,7 +26,7 @@ public class CatchUncheckedExceptionsTest implements RewriteTest {
     }
 
     @Test
-    void test_wrapSimpleMethod() {
+    void test_addTryCatch_voidMethod() {
         @Language("java") String before ="import java.io.IOException;\n" +
                 "\n" +
                 "public class UserClass {\n" +
@@ -38,7 +38,7 @@ public class CatchUncheckedExceptionsTest implements RewriteTest {
                 "    private void anotherMethod(){\n" +
                 "        int b = 2 + 2;\n" +
                 "        myMethod();\n" +
-                "        int a = 3;\n" +
+                "        int c = 3;\n" +
                 "    }\n" +
                 "}\n";
 
@@ -57,7 +57,7 @@ public class CatchUncheckedExceptionsTest implements RewriteTest {
                 "        } catch (IOException e) {\n" +
                 "            e.printStackTrace();\n" +
                 "        }\n" +
-                "        int a = 3;\n" +
+                "        int c = 3;\n" +
                 "    }\n" +
                 "}\n";
 
@@ -67,7 +67,7 @@ public class CatchUncheckedExceptionsTest implements RewriteTest {
     }
 
     @Test
-    void test_wrapMethodWithReturn() {
+    void test_addTryCatch_methodInVarDeclaration() {
         @Language("java") String before ="import java.io.IOException;\n" +
                 "\n" +
                 "public class UserClass {\n" +
@@ -90,7 +90,7 @@ public class CatchUncheckedExceptionsTest implements RewriteTest {
                 "    }\n" +
                 "    \n" +
                 "    private void anotherMethod(){\n" +
-                "       int b;\n" +
+                "        int b = null;\n" +
                 "        try {\n" +
                 "            b = myMethod();\n" +
                 "        } catch (IOException e) {\n" +
@@ -105,17 +105,19 @@ public class CatchUncheckedExceptionsTest implements RewriteTest {
     }
 
     @Test
-    void test_wrapMemberMethod() {
+    void test_addTryCatch_methodInAssignment() {
         @Language("java") String before ="import java.io.IOException;\n" +
                 "\n" +
                 "public class UserClass {\n" +
                 "    \n" +
                 "    private int myMethod() {\n" + // throws IOException
-                "       return 2 + 2;\n" +
+                "       return 2;\n" +
                 "    }\n" +
                 "    \n" +
                 "    private void anotherMethod(){\n" +
-                "       int b = myMethod();\n" +
+                "        int b;\n" +
+                "        b = myMethod();\n" +
+                "        int a = b;\n" +
                 "    }\n" +
                 "}\n";
 
@@ -123,14 +125,65 @@ public class CatchUncheckedExceptionsTest implements RewriteTest {
                 "\n" +
                 "public class UserClass {\n" +
                 "    \n" +
-                "    private int myMethod() {\n" + // throws IOException
-                "       return a = 2 + 2;\n" +
+                "    private int myMethod() {\n" +
+                "       return 2;\n" +
                 "    }\n" +
                 "    \n" +
                 "    private void anotherMethod(){\n" +
-                "       int b;\n" +
+                "        int b;\n" +
                 "        try {\n" +
                 "            b = myMethod();\n" +
+                "        } catch (IOException e) {\n" +
+                "            e.printStackTrace();\n" +
+                "        }\n" +
+                "        int a = b;\n" +
+                "    }\n"+
+                "}\n";
+
+        rewriteRun(
+                java(before,after)
+        );
+    }
+
+    @Test
+    void test_addTryCatch_methodIsMemberVariable() {
+        @Language("java") String before ="import java.io.IOException;\n" +
+                "\n" +
+                "public class UserClass {\n" +
+                "    public UserClass(){}\n" +
+                "    String s = \"Hello\";\n" +
+                "    \n" +
+                "    public String myMethod() {\n" + // throws IOException
+                "       return s;\n" +
+                "    }\n" +
+                "}\n" +
+                "\n" +
+                "class UserClass2 {" +
+                "    \n" +
+                "    public void myMethod2() {\n" +
+                "        UserClass c = new UserClass();\n" + // throws IOException
+                "        String s2 = c.myMethod();\n" +
+                "    }\n" +
+                "}\n";
+
+        @Language("java") String after = "import java.io.IOException;\n" +
+                "\n" +
+                "public class UserClass {\n" +
+                "    public UserClass(){}\n" +
+                "    String s = \"Hello\";\n" +
+                "    \n" +
+                "    public String myMethod() {\n" + // throws IOException
+                "       return s;\n" +
+                "    }\n" +
+                "}\n" +
+                "\n" +
+                "class UserClass2 {" +
+                "    \n" +
+                "    public void myMethod2() {\n" +
+                "        UserClass c = new UserClass();\n" + // throws IOException
+                "        String s2 = null;\n" +
+                "        try {\n" +
+                "            s2 = c.myMethod();\n" +
                 "        } catch (IOException e) {\n" +
                 "            e.printStackTrace();\n" +
                 "        }\n" +

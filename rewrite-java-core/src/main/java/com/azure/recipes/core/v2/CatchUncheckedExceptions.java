@@ -16,6 +16,7 @@ import org.openrewrite.java.tree.*;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -98,23 +99,152 @@ public class CatchUncheckedExceptions extends Recipe {
 
         private String fullyQualifiedExceptionName = "java.io.IOException";
 
-        private final JavaTemplate tryBlocKTemplate = JavaTemplate.builder(
-                "try{#{any(Object)};} "    //#{}  catch (IOException e) { e.printStackTrace(); }
-        ).contextSensitive().build();
+        JavaTemplate template = JavaTemplate.builder("try{ #{any()}; } catch (IOException e) { e.printStackTrace(); }") //"+ returnType +"
+                .contextSensitive().build();
 
-        private final JavaTemplate catchTemplate = JavaTemplate.builder(catchTemplateString)
-                //.contextSensitive()
-                .build();
-        //private final JavaTemplate catchTemplate
+        private <M extends MethodCall> @Nullable M visitMethodCall(M methodCall, Supplier<M> visitSuper) {
+            if (!methodMatcher.matches(methodCall)) {
+                // Make no changes
+                return visitSuper.get();
+            }
+            // If match found, check that it is not already handled by a try block
+            try {
+                // Get the first upstream try block. Will throw exception if there are none
+                J.Try _try = getCursor().dropParentUntil(it -> it instanceof J.Try).getValue();
 
-        private final JavaTemplate fullTemplate = JavaTemplate.builder("try{ #{}; } catch (IOException e) { e.printStackTrace(); }").contextSensitive().build();
-        /*
-        .javaParser(JavaParser.fromJavaVersion().classpathFromResources(context, "core-1.0.0-beta.1"))
-                    .contextSensitive()
-                    .imports("io.clientcore.core.http.models.HttpRedirectOptions")
+                // Get the first enclosing block
+                J.Block block = getCursor().dropParentUntil(it -> it instanceof J.Block).getValue();
 
+                // Check to see if this try block is the parent of the enclosing block
+                if (_try.getBody().equals(block)) {
+                    // Check if the correct exception is caught
+                    boolean isCaught = _try.getCatches().stream().anyMatch(
+                            _catch -> Objects.requireNonNull(_catch.getParameter().getType())
+                                    .isAssignableFrom(Pattern.compile(fullyQualifiedExceptionName)));
+                    if (isCaught) {
+                        System.out.println("is caught");
+                        // Make no changes if exception already caught
+                        return visitSuper.get();
+                    }
+                }
+            } catch (IllegalStateException e) {
+                System.out.println("no Try");
+                //return visitSuper.get();
+            }
+            // If the method matches and exception is not caught set messages for block
+            getCursor().putMessageOnFirstEnclosing(J.Block.class, "METHOD", methodCall);
+            // It's easier to id nested elements from below
+            Tree parent = getCursor().getParentTreeCursor().getValue();
+            if (! (parent instanceof J.Block)) {
+                // If the method is part of a nested statement flag the direct tree parent
+                getCursor().putMessageOnFirstEnclosing(J.Block.class, "PARENT", parent);
+                try {
+                    // And the first parent that is a statement
+                    Statement statement = getCursor().dropParentUntil(it -> it instanceof Statement).getValue();
+                    getCursor().putMessageOnFirstEnclosing(J.Block.class, "STATEMENT", statement);
+                    System.out.println("STATEMENT: "+ statement);
+                } catch (IllegalStateException ignored) {}
+            }
+
+            // Remove the method from its original location.
+            return null;
+        }
+
+
+        /**
+         * Recieves the Method calls and performs checks and alterations
          */
+        @Override
+        public J.Block visitBlock(J.Block block, ExecutionContext context) {
+            J.Block body = super.visitBlock(block, context);
 
+            // Get the method that needs to be changed
+            MethodCall method = getCursor().pollMessage("METHOD");
+            if (method == null) {
+                return body;
+            }
+
+            //Get the parents of the method
+            Tree parent = getCursor().pollMessage("PARENT");
+
+            System.out.println("parent:" + parent);
+            System.out.println(TreeVisitingPrinter.printTree(getCursor()));
+            // Method is a direct statement
+            if (parent == null) {
+
+                // Passing tests
+                System.out.println("one");
+                body = template.apply(getCursor(), method.getCoordinates().replace(), method);
+                return body;
+            }
+
+            // Get the first statement parent of method
+            Statement parent_statement = getCursor().pollMessage("STATEMENT");
+
+            System.out.println("statement_parent:" + parent_statement);
+            // If method is part of a variable declaration, a new statement is necessary for the names assignment variable
+            if (parent_statement instanceof J.VariableDeclarations) {
+                int vd_index = body.getStatements().indexOf(parent_statement);
+                if (((J.VariableDeclarations) parent_statement).getVariables().size() != 1) {
+                    // Recipe can only handle a single named Variable
+                    return body;
+                }
+
+                    JavaTemplate template1 = JavaTemplate.builder(body.getStatements().get(vd_index)
+                            + " = null;" + ((J.VariableDeclarations) parent_statement).getVariables().get(0).toString()).contextSensitive().build(); // vd_str +
+
+//                else {
+//                    template1 = JavaTemplate.builder(body.getStatements().get(vd_index)
+//                            + " = null;" + parent).contextSensitive().build();;
+//                }
+
+
+                body = template1.apply(updateCursor(body), parent_statement.getCoordinates().replace());
+
+                body = template.apply(updateCursor(body), body.getStatements().get(vd_index+1).getCoordinates().replace(),
+                        body.getStatements().get(vd_index+1));//((J.VariableDeclarations) parent_statement).getVariables().get(0)); // body.getStatements().get(vd_index+1)
+                // TODO: Patch holes left by the java parser
+
+               // Template does not build methodType properly
+
+                //System.out.println("two");
+                return body;
+            }
+
+            if (parent_statement != null) {
+
+                if (parent_statement.equals(parent)) {
+                    // Replace the statement containing the method
+                    // Probably a variable assignment
+                    System.out.println("three");
+                    body = template.apply(getCursor(), parent_statement.getCoordinates().replace(), parent);
+                    return body;
+                }
+                // Not at all sure when the parent_statement would be null but the parent wouldn't
+
+
+            }
+
+           // if (parent_statement instanceof J.VariableDeclarations || parent instanceof J.VariableDeclarations.NamedVariable) {
+                // Create a new statement for the named variable
+                //body = template.apply(getCursor(), method.getCoordinates().replace(), parent, parent_statement);
+            //}
+           // body = template.apply(updateCursor(body), parent_statement.getCoordinates().after(), parent);
+//            else {
+//                tryStatement = parent.toString();
+//                if (parent_statement == null) {
+//                    coordinates = method.getCoordinates().replace();
+//                }
+//                else {
+//                    coordinates = parent_statement.getCoordinates().after();
+//                }
+
+
+            //body = fullTemplate.apply(updateCursor(body), coordinates, tryStatement);
+
+            System.out.println("four");
+            return body;
+        }
         /**
          * The Suppliers that traverse the LST and find calls to be removed.
          */
@@ -137,95 +267,6 @@ public class CatchUncheckedExceptions extends Recipe {
         }
 
 
-        private <M extends MethodCall> @Nullable M visitMethodCall(M methodCall, Supplier<M> visitSuper) {
-            if (!methodMatcher.matches(methodCall)) {
-                // Make no changes
-                return visitSuper.get();
-            }
-
-            // If match found, check that it is not already handled by a try block
-            try {
-                // Get the first upstream try block. Will throw exception if there are none
-                J.Try _try = getCursor().dropParentUntil(it -> it instanceof J.Try).getValue();
-
-                // Get the first enclosing block
-                J.Block block = getCursor().dropParentUntil(it -> it instanceof J.Block).getValue();
-
-                // Check to see if this try block is the parent of the enclosing block
-                if (_try.getBody().equals(block)) {
-                    // Check if the correct exception is caught
-                    boolean isCaught = _try.getCatches().stream().anyMatch(
-                            _catch -> Objects.requireNonNull(_catch.getParameter().getType())
-                                    .isAssignableFrom(Pattern.compile(fullyQualifiedExceptionName)));
-                    if (isCaught) {
-                        System.out.println("is caught");
-                        // Make no changes if exception already caught
-                        return visitSuper.get();
-                    }
-                }
-            } catch (IllegalStateException e) {
-                //return visitSuper.get();
-            }
-            // If the method matches and exception is not caught set messages for block
-            getCursor().putMessageOnFirstEnclosing(J.Block.class, "METHOD", methodCall);
-            // It's easier to id nested elements from below
-            Tree parent = getCursor().getParentTreeCursor().getValue();
-            if (! (parent instanceof J.Block)) {
-                // If the method is part of a nested statement flag the direct tree parent
-                getCursor().putMessageOnFirstEnclosing(J.Block.class, "PARENT", parent);
-                try {
-                    // And the first parent that is a statement
-                    Statement statement = getCursor().dropParentUntil(it -> it instanceof Statement).getValue();
-                    getCursor().putMessageOnFirstEnclosing(J.Block.class, "STATEMENT", statement);
-                    System.out.println("statement: "+ statement);
-                } catch (IllegalStateException ignored) {}
-            }
-            //getCursor().putMessageOnFirstEnclosing(J.Block.class, "FOUND_PARENT", parent);
-//            System.out.println("parent is " + getCursor().getParentTreeCursor().getValue());
-//            System.out.println("parent is " + getCursor().getParentTreeCursor().getParentTreeCursor().getValue());
-//            System.out.println("parent is " + getCursor().getParentTreeCursor().getParentTreeCursor().getParentTreeCursor().getValue());
-
-            // Remove the method from its original location.
-            return null;
-        }
-
-
-        /**
-         * Recieves the Method calls and performs checks and alterations
-         */
-        @Override
-        public J.Block visitBlock(J.Block block, ExecutionContext context) {
-            J.Block body = super.visitBlock(block, context);
-
-            // Get the method that needs to be changed
-            MethodCall method = getCursor().pollMessage("METHOD");
-            if (method == null) {
-                return body;
-            }
-
-            //Get the parents of the method
-            Tree parent = getCursor().pollMessage("PARENT");
-            Statement parent_statement = getCursor().pollMessage("STATEMENT");
-            //String tryStatement;
-            //JavaCoordinates coordinates;
-            if (parent == null) {
-                // Method is the statement
-                body = fullTemplate.apply(getCursor(), method.getCoordinates().replace(), method.toString());
-                return body;
-                //tryStatement = method.toString();
-                //coordinates = method.getCoordinates().replace();
-            }
-
-            if (parent_statement == null) {
-                // Not at all sure when the parent_statement would be null but the parent wouldn't
-                body = fullTemplate.apply(getCursor(), method.getCoordinates().replace(), parent.toString());
-                return body;
-            }
-
-            body = fullTemplate.apply(updateCursor(body), parent_statement.getCoordinates().after(), parent.toString());
-//
-            return body;
-        }
 
         /*
         @Override
