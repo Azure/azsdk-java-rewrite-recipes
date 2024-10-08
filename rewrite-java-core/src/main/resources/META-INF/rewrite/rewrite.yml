@@ -133,14 +133,27 @@ recipeList:
 
   # Rename methods
   # Alternatively, can target HttpTrait directly
+
+  # Before:
+  # textTranslationClient.retryOptions(new RetryOptions())
+  # After:
+  # textTranslationClient.httpRetryOptions(new RetryOptions())
   - org.openrewrite.java.ChangeMethodName:
       methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder retryOptions(..)
       newMethodName: httpRetryOptions
       matchOverrides: true
+  # Before:
+  # textTranslationClient.pipeline(pipeline)
+  # After:
+  # textTranslationClient.httpPipeline(pipeline)
   - org.openrewrite.java.ChangeMethodName:
       methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder pipeline(..)
       newMethodName: httpPipeline
       matchOverrides: true
+  # Before:
+  # textTranslationClient.addPolicy(customPolicy)
+  # After:
+  # textTranslationClient.addHttpPipelinePolicy(customPolicy)
   - org.openrewrite.java.ChangeMethodName:
       methodPattern: com.azure.ai.translation.text.TextTranslationClientBuilder addPolicy(..)
       newMethodName: addHttpPipelinePolicy
