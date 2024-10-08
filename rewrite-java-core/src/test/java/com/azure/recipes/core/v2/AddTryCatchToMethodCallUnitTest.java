@@ -10,9 +10,9 @@ import org.openrewrite.test.RewriteTest;
 import static org.openrewrite.java.Assertions.java;
 
 /**
- * HttpTraitTest tests interface migration from com.azure.core.client.traits.HttpTrait
- * to io.clientcore.core.models.traits.HttpTrait.
- * Tests simple method renaming with declarative recipe.
+ * Add try-catch recipe wraps all method calls that match the supplied method pattern
+ * in a try-catch block with the provided catch code snippet.
+ * This test class tests the recipe alone.
  * @author Annabelle Mittendorf Smith
  */
 public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
@@ -22,7 +22,13 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
      */
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipes(new AddTryCatchToMethodCallRecipe("UserClass myMethod(..)", true,"e.printStackTrace();"));
+        spec.recipes(new AddTryCatchToMethodCallRecipe("UserClass myMethod(..)",
+                "catch (IOException e) { e.printStackTrace(); }",
+                "java.io.IOException"),
+                new AddTryCatchToMethodCallRecipe("CatchAndThrow myMethod(..)",
+                        "catch (IOException e) { throw new RuntimeException(e); }",
+                        "java.io.IOException")
+        );
     }
 
     @Test
@@ -149,7 +155,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
                 "    public UserClass(){}\n" +
                 "    String s = \"Hello\";\n" +
                 "    \n" +
-                "    public String myMethod() {\n" +
+                "    public String myMethod(int a, String b) {\n" +
                 "       return s;\n" +
                 "    }\n" +
                 "}\n" +
@@ -158,7 +164,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
                 "    \n" +
                 "    public void myMethod2() {\n" +
                 "        UserClass c = new UserClass();\n" +
-                "        String s2 = c.myMethod();\n" +
+                "        String s2 = c.myMethod(3, \"hello\");\n" +
                 "    }\n" +
                 "}\n";
 
@@ -168,7 +174,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
                 "    public UserClass(){}\n" +
                 "    String s = \"Hello\";\n" +
                 "    \n" +
-                "    public String myMethod() {\n" +
+                "    public String myMethod(int a, String b) {\n" +
                 "       return s;\n" +
                 "    }\n" +
                 "}\n" +
@@ -179,7 +185,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
                 "        UserClass c = new UserClass();\n" +
                 "        String s2 = null;\n" +
                 "        try {\n" +
-                "            s2 = c.myMethod();\n" +
+                "            s2 = c.myMethod(3, \"hello\");\n" +
                 "        } catch (IOException e) {\n" +
                 "            e.printStackTrace();\n" +
                 "        }\n" +
@@ -194,8 +200,8 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
     @Test
     void test_addTryCatch_methodIsInNestedCall() {
         @Language("java") String before =
-                "public class UserClass {\n" +
-                "    public UserClass(){}\n" +
+                "public class CatchAndThrow {\n" +
+                "    public CatchAndThrow(){}\n" +
                 "    String s = \"Hello\";\n" +
                 "    \n" +
                 "    public String myMethod() {\n" +
@@ -204,7 +210,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
                 "}\n" +
                 "\n" +
                 "class UserClass2 {\n" +
-                "    UserClass c = new UserClass();\n" +
+                "    CatchAndThrow c = new CatchAndThrow();\n" +
                 "}\n" +
                 "class UserClass3 {\n" +
                 "    UserClass2 c2 = new UserClass2();\n" +
@@ -215,8 +221,8 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
 
         @Language("java") String after = "import java.io.IOException;\n" +
                 "\n" +
-                "public class UserClass {\n" +
-                "    public UserClass(){}\n" +
+                "public class CatchAndThrow {\n" +
+                "    public CatchAndThrow(){}\n" +
                 "    String s = \"Hello\";\n" +
                 "    \n" +
                 "    public String myMethod() {\n" +
@@ -225,7 +231,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
                 "}\n" +
                 "\n" +
                 "class UserClass2 {\n" +
-                "    UserClass c = new UserClass();\n" +
+                "    CatchAndThrow c = new CatchAndThrow();\n" +
                 "}\n" +
                 "class UserClass3 {\n" +
                 "    UserClass2 c2 = new UserClass2();\n" +
@@ -234,10 +240,50 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
                 "        try {\n" +
                 "            s = c2.c.myMethod();\n" +
                 "        } catch (IOException e) {\n" +
-                "            e.printStackTrace();\n" +
+                "            throw new RuntimeException(e);\n" +
+                //"            e.printStackTrace();\n" +
                 "        }\n" +
                 "    }\n" +
                 "}";
+
+        rewriteRun(
+                java(before,after)
+        );
+    }
+    @Test
+    void test_addTryCatch_catchTrows() {
+        @Language("java") String before =
+                "public class CatchAndThrow {\n" +
+                        "    \n" +
+                        "    private void myMethod() {\n" +
+                        "        int a = 1 + 1;\n" +
+                        "    }\n" +
+                        "    \n" +
+                        "    private void anotherMethod(){\n" +
+                        "        int b = 2 + 2;\n" +
+                        "        myMethod();\n" +
+                        "        int c = 3;\n" +
+                        "    }\n" +
+                        "}\n";
+
+        @Language("java") String after = "import java.io.IOException;\n" +
+                "\n" +
+                "public class CatchAndThrow {\n" +
+                "    \n" +
+                "    private void myMethod() {\n" +
+                "        int a = 1 + 1;\n" +
+                "    }\n" +
+                "    \n" +
+                "    private void anotherMethod(){\n" +
+                "        int b = 2 + 2;\n" +
+                "        try {\n" +
+                "            myMethod();\n" +
+                "        } catch (IOException e) {\n" +
+                "            throw new RuntimeException(e);\n" +
+                "        }\n" +
+                "        int c = 3;\n" +
+                "    }\n" +
+                "}\n";
 
         rewriteRun(
                 java(before,after)

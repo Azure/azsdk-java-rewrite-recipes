@@ -196,6 +196,11 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.util.Configuration
       newFullyQualifiedTypeName: io.clientcore.core.util.configuration.Configuration
 
+  - com.azure.recipes.core.v2.AddTryCatchToMethodCallRecipe:
+      methodPattern: com.azure.core.util.BinaryData toObject(..)
+      catchTemplateString: catch (IOException e) { e.printStackTrace(); }
+      fullyQualifiedExceptionName: java.io.IOException
+
   - com.azure.recipes.core.v2.ContextRecipe
   - com.azure.recipes.core.v2.RetryOptionsConstructorRecipe
   - com.azure.recipes.core.v2.TypeReferenceRecipe
@@ -216,3 +221,9 @@ recipeList:
       find: '(?<!\.)[\w]*[\s]*HttpLogDetailLevel'
       replace: 'HttpLogOptions.HttpLogDetailLevel'
       regex: true
+
+  - com.azure.recipes.core.v2.AddTryCatchToMethodCallRecipe:
+      methodPattern: com.azure.ai.translation.text.TextTranslationClient translate(..)
+      catchTemplateString: catch (IOException e) { throw new RuntimeException(e); }
+      fullyQualifiedExceptionName: java.io.IOException
+

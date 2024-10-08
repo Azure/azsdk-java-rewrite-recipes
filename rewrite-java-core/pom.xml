@@ -105,7 +105,14 @@
             <groupId>com.azure</groupId>
             <artifactId>azure-ai-translation-text</artifactId>
             <version>1.0.0-beta.1</version>
-            <scope>test</scope>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.clientcore</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0.0-beta.1</version>
+            <scope>compile</scope>
         </dependency>
         <!-- Alternatively, use this project version -->
         <!--
