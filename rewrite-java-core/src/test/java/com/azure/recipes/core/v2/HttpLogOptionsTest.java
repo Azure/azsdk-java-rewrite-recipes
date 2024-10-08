@@ -39,7 +39,7 @@ public class HttpLogOptionsTest implements RewriteTest {
         after += "\n  }";
         after += "\n}";
         rewriteRun(
-                java(before,after)
+                java(before, after)
         );
     }
 
@@ -59,7 +59,7 @@ public class HttpLogOptionsTest implements RewriteTest {
         after += "\n  }";
         after += "\n}";
         rewriteRun(
-                java(before,after)
+                java(before, after)
         );
     }
 
