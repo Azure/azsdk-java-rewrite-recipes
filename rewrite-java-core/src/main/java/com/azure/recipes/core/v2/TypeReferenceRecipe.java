@@ -118,8 +118,8 @@ public class TypeReferenceRecipe extends Recipe {
             // Add the import to the set and check if it already exists
             boolean isNewImport = importSet.add(importQualid);
 
-            // If the import is for ParameterizedType and it's already in the set, skip it
-            if (importQualid.equals(" java.lang.reflect.ParameterizedType") && !isNewImport) {
+            // If the import is for ParameterizedType, and it's already in the set, skip it
+            if (importQualid.trim().equals("java.lang.reflect.ParameterizedType") && !isNewImport) {
                 return null;
             }
 
