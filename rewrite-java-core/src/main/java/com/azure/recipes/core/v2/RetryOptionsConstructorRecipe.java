@@ -17,6 +17,17 @@ import java.util.Map;
  * RetryOptionsRecipe changes RetryOptions constructor to HttpRetryOptions constructor.
  * It also removes any references to FixedDelay and ExponentialDelay and changes
  * com.azure.core.http.policy.RetryOptions to io.clientcore.core.http.models.HttpRetryOptions
+ * --------------------------------------------------
+ * Before applying this recipe:
+ * import com.azure.core.http.policy.RetryOptions;
+ * ...
+ * new RetryOptions(new FixedDelayOptions(3, Duration.ofMillis(50)))
+ * --------------------------------------------------
+ * After applying this recipe:
+ * import io.clientcore.core.http.models.HttpRetryOptions;
+ * ...
+ * new HttpRetryOptions(3, Duration.ofMillis(50))
+ * --------------------------------------------------
  * @author Ali Soltanian Fard Jahromi
  */
 public class RetryOptionsConstructorRecipe extends Recipe {
@@ -113,9 +124,6 @@ public class RetryOptionsConstructorRecipe extends Recipe {
             if (visitedIdentifier.getSimpleName().equals("RetryOptions")) {
                 return visitedIdentifier.withSimpleName("HttpRetryOptions");
             }
-            if (visitedIdentifier.getSimpleName().equals("retryOptions")) {
-                return visitedIdentifier.withSimpleName("httpRetryOptions");
-            }
             return visitedIdentifier;
         }
 
@@ -130,6 +138,18 @@ public class RetryOptionsConstructorRecipe extends Recipe {
                 return TypeTree.build(" io.clientcore.core.http.models.HttpRetryOptions");
             }
             return visitedFieldAccess;
+        }
+
+        /**
+         * Method to change usages of retryOptions builder method to httpRetryOptions
+         */
+        @Override
+        public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext executionContext) {
+            J.MethodInvocation visitedMethodInv = super.visitMethodInvocation(method, executionContext);
+            if (visitedMethodInv.getSimpleName().equals("retryOptions")) {
+                return visitedMethodInv.withName(visitedMethodInv.getName().withSimpleName("httpRetryOptions"));
+            }
+            return visitedMethodInv;
         }
     }
 }

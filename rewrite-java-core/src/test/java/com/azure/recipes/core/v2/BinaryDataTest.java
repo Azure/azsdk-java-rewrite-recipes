@@ -77,10 +77,11 @@ public class BinaryDataTest implements RewriteTest {
         before += "\n}";
 
 
-        @Language("java") String after = "import java.lang.reflect.ParameterizedType;\n" +
+        @Language("java") String after =
+                "import io.clientcore.core.util.binarydata.BinaryData;\n\n" +
+                "import java.lang.reflect.ParameterizedType;\n" +
                 "import java.lang.reflect.Type;\n" +
-                "import java.util.List;\n"+
-                "import io.clientcore.core.util.binarydata.BinaryData;\n" +
+                "import java.util.List;\n\n"+
                 "public class Testing {\n" +
                 "  private static final Type TESTING_TYPE = new ParameterizedType() {\n" +
                 "      @Override\n" +
@@ -103,8 +104,6 @@ public class BinaryDataTest implements RewriteTest {
                 after += "}\n";
 
         rewriteRun(
-                spec -> spec.cycles(2)
-                        .expectedCyclesThatMakeChanges(2),
                 java(before,after)
         );
     }
