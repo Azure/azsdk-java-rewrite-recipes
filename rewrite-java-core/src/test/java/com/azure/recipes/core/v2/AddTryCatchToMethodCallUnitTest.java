@@ -81,7 +81,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
                 "    }\n" +
                 "    \n" +
                 "    private void anotherMethod(){\n" +
-                "       int b = myMethod();\n" +
+                "        int b = myMethod();\n" +
                 "    }\n" +
                 "}\n";
 

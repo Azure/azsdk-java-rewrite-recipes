@@ -127,7 +127,7 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
                 // JavaParser may not resolve azure-ai-translation-text-1.0.0-beta.1.jar and be unable
                 // to parse azure-ai-translation-text elements.
                 JavaTemplate tryCatchTemplate = JavaTemplate.builder("try{ #{any()}; } " + catchTemplateString)
-                        //.javaParser(JavaParser.fromJavaVersion().classpathFromResources(context, "azure-ai-translation-text-1.0.0-beta.1.jar"))
+                        .javaParser(JavaParser.fromJavaVersion().classpathFromResources(context, "azure-ai-translation-text-1.0.0-beta.1.jar"))
                         .contextSensitive()
                         .imports(fullyQualifiedExceptionName)
                         //.imports("com.azure.ai.translation.text.models.InputTextItem")//.imports(com.azure.ai.translation.text.models)//Objects.requireNonNull(method.getMethodType()).getDeclaringType().getFullyQualifiedName()
@@ -218,12 +218,44 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
                     .imports(fullyQualifiedExceptionName)
                     .build();
 
+            // Create an empty block to apply the try-catch template based off the cursor values from the main body
+            J.Block b = J.Block.createEmptyBlock();
+            b = tryCatchTemplate.apply(new Cursor(getCursor(),b), b.getCoordinates().firstStatement());
+            //System.out.println("b.statements: " + b.getStatements());
+
+            // Get the created try-catch block
+            J.Try _try = (J.Try) b.getStatements().get(0);
+            //System.out.println("catches: " + _try.getCatches());
+
+            // Extract the generated dummy elements
+            J.VariableDeclarations dummy_varDec = (J.VariableDeclarations) _try.getBody().getStatements().get(0);
+            J.Assignment dummy_Assign = (J.Assignment) _try.getBody().getStatements().get(1);
+
+            List<Statement> body_statements = body.getStatements();
+            System.out.println("body_statements: " + body_statements);
+
             // Method is a direct statement
             if (parent == null) {
-                // TODO
+
+                Statement method_statement = (Statement) method.withPrefix(dummy_varDec.getPrefix());
+                System.out.println("method: "+ method );
+                System.out.println("method_statement: " + method_statement);
+                int parent_index = body.getStatements().indexOf(method_statement);
+                System.out.println("body_statements: " + body_statements);
+                System.out.println("parent_index: " + parent_index);
+                _try = _try.withBody(_try.getBody().withStatements(ListUtils.insert(
+                        new ArrayList<>(), method_statement, 0 )));
+
+                body_statements.set(parent_index, _try);
             }
             else if (parent instanceof J.Assignment) {
-                J.Assignment assignment = (J.Assignment) parent;
+                J.Assignment assignment = (J.Assignment) ((J.Assignment) parent).withPrefix(dummy_Assign.getPrefix());
+                _try = _try.withBody(_try.getBody().withStatements(ListUtils.insert(
+                        new ArrayList<>(), assignment, 0 )));
+
+                int parent_index = body.getStatements().indexOf(parent);
+                body_statements.set(parent_index, _try);
+                System.out.println("assignment: " + assignment);
                 // TODO
             }
             else if (parent_statement instanceof J.VariableDeclarations) { // TODO parent statement not guaranteed to be top statement
@@ -248,34 +280,14 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
 
                 //System.out.println("namedVar as expression:" + namedVariable.getName().unwrap());
 
-                // Create an empty block to apply the try-catch template based off the cursor values from the main body
-                J.Block b = J.Block.createEmptyBlock();
-                b = tryCatchTemplate.apply(new Cursor(getCursor(),b), b.getCoordinates().firstStatement());
-                //System.out.println("b.statements: " + b.getStatements());
 
-                // Get the created try-catch block
-                J.Try _try = (J.Try) b.getStatements().get(0);
-                //System.out.println("catches: " + _try.getCatches());
 
-                // Extract the generated dummy elements
-                J.VariableDeclarations dummy_varDec = (J.VariableDeclarations) _try.getBody().getStatements().get(0);
-                J.Assignment dummy_Assign = (J.Assignment) _try.getBody().getStatements().get(1);
 
                 assert good_expression != null;
                 // Repurpose the dummy variable
                 dummy_Assign = dummy_Assign.withVariable(namedVariable.getName().unwrap());
                 dummy_Assign = dummy_Assign.withAssignment(good_expression);
 
-                // Create a new Assignment from the two;
-//                J.Assignment assignment = new J.Assignment(
-//
-//                        Tree.randomId(),
-//                        dummy_Assign.getPrefix(),
-//                        dummy_Assign.getMarkers(),
-//                        namedVariable.getName().unwrap(),
-//                        dummy_Assign.getPadding().getAssignment().withElement(good_expression),
-//                        //JLeftPadded.build(good_expression),
-//                        namedVariable.getType());
 
 //                Statement s = assignment;
                 Statement s = dummy_Assign;
@@ -283,17 +295,8 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
                 _try = _try.withBody(_try.getBody().withStatements(ListUtils.insert(
                        new ArrayList<>(), s, 0 )));
 
-                System.out.println("try statements: " + _try.getBody().getStatements());
 
-                J.Block tempBody = body;
 
-                // Add the try block where the templated expression was
-//                System.out.println("assignment:" + assignment);
-//                System.out.println("coordinates: "+assignment.getCoordinates().replace());
-                //body = tryCatchTemplate.apply(updateCursor(body), body.getCoordinates().firstStatement()); //  assignment assignment.getCoordinates().replace()
-                // throwing java.lang.IllegalArgumentException: Could not parse as Java
-
-                List<Statement> statements = new ArrayList<>();
 
                 namedVariable = namedVariable.withInitializer(dummy_varDec.getVariables().get(0).getInitializer());
                 //parent_vd = parent_vd.withVariables(ListUtils.insert(parent_vd.getVariables(), namedVariable, 0));
@@ -312,27 +315,14 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
                 List<J.VariableDeclarations.NamedVariable> variableList = new ArrayList<>();
                 variableList.add(namedVariable);
                 System.out.println("variableList: " + variableList);
-                //parent_vd = parent_vd.withVariables(variableList);
 
-//                J.VariableDeclarations vd = (J.VariableDeclarations) body.getStatements().get(parent_index);
-//                vd.getVariables().add(0, namedVariable);
-//                System.out.println("vd: " + vd);
-//                body.getStatements().remove(parent_statement);
-//                System.out.println("body.getStatements(): " + body.getStatements());
-                //parent_vd.getVariables().add(0, namedVariable);
 
-//                body_statements.remove(parent_index);
-//                body_statements.add(parent_index, vd);
-                List<Statement> body_statements = body.getStatements();
-                System.out.println("body_statements: " + body_statements);
 
                 body_statements.set(parent_index, parent_vd); // Works
                 body_statements.add(parent_index +1, _try);
 
-                body = body.withStatements(body_statements);
-//                body = body.withStatements(ListUtils.insert(
-//                        body.getStatements(), _try, parent_index + 1
-//                ));
+
+
                 System.out.println("final body: "+ body.getStatements());
                 //body = body.withStatements()
             }
@@ -340,6 +330,7 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
                 System.out.println("unhandled method use");
             }
 
+            body = body.withStatements(body_statements);
             // Add the import if needed
             maybeAddImport(fullyQualifiedExceptionName,false);
             return body;
@@ -388,8 +379,9 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
                 } catch (IllegalStateException ignored) {}
             }
 
+            return visitSuper.get();
             // Remove the method call.
-            return null;
+            //return null;
         }
 
         /**
@@ -414,3 +406,14 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
     } // end catchUncheckedVisitor
 
 }
+
+// Create a new Assignment from the two;
+//                J.Assignment assignment = new J.Assignment(
+//
+//                        Tree.randomId(),
+//                        dummy_Assign.getPrefix(),
+//                        dummy_Assign.getMarkers(),
+//                        namedVariable.getName().unwrap(),
+//                        dummy_Assign.getPadding().getAssignment().withElement(good_expression),
+//                        //JLeftPadded.build(good_expression),
+//                        namedVariable.getType());
