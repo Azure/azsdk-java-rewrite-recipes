@@ -23,11 +23,13 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
- * TODO Add Options
- * TODO Add recipe
- * TODO Add Real Use Test
- * TODO Tidy code
- * TODO add documentation
+ * Add try-catch to method recipe places all calls to methods matching the provided method
+ * pattern in a try-catch block based off the template provided.
+ * Recipe will attempt to use the JavaParser first, but will also run on code that cannot be
+ * parsed by Open Rewrites Java parser.
+ * Recipe does not check if the method throws the supplied exception, only that the method is
+ * in a suitable try-catch block.
+ * If the template is not syntactically correct, the recipe will not make any changes.
  * @author Annabelle Mittendorf Smith
  */
 
@@ -77,34 +79,33 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
 
     @Override
     public @NlsRewrite.DisplayName @NotNull String getDisplayName() {
-        return "Catch unchecked exceptions";
+        return "Add try-catch to method";
     }
 
     @Override
     public @NlsRewrite.Description @NotNull String getDescription() {
-        return "Surround any unchecked exceptions thrown by methods called in a try catch block.";
+        return "Surrounds calls to the target method in a custom try-catch block.";
     }
 
     /**
-     * Method to return the visitor that visits the usages of HttpLogOptions and HttpLogDetailLevel
+     * Method to return the visitor that performs the checks and changes
      *
      * @return A TreeVisitor to visit the usages of HttpLogOptions and HttpLogDetailLevel
      */
     @Override
     public @NotNull TreeVisitor<?, ExecutionContext> getVisitor() {
-        return new CatchUncheckedExceptionsVisitor();
+        return new AddTryCatchVisitor();
     }
-
 
     /**
      * Visitor to change HttpLogOptions type and change usage of HttpLogDetailLevel
      */
-    private class CatchUncheckedExceptionsVisitor extends JavaIsoVisitor<ExecutionContext> {
+    private class AddTryCatchVisitor extends JavaIsoVisitor<ExecutionContext> {
 
         private final MethodMatcher methodMatcher = new MethodMatcher(methodPattern, true);
 
         /**
-         * Receives the Method calls and performs checks and alterations
+         * Overridden visitBlock method performs the changes to methods filtered by visitMethodCall.
          */
         @Override
         public J.@NotNull Block visitBlock(J.@NotNull Block block, @NotNull ExecutionContext context) {
@@ -118,218 +119,198 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
 
             //Get the parents of the method
             Tree parent = getCursor().pollMessage("PARENT");
-
             // Get the first statement parent of method
             Statement parent_statement = getCursor().pollMessage("STATEMENT");
 
-            try {       // Attempt to parse with the java parser
-                // Parser may throw java.lang.IllegalArgumentException: Could not parse as Java
-                // JavaParser may not resolve azure-ai-translation-text-1.0.0-beta.1.jar and be unable
-                // to parse azure-ai-translation-text elements.
-                JavaTemplate tryCatchTemplate = JavaTemplate.builder("try{ #{any()}; } " + catchTemplateString)
-                        .javaParser(JavaParser.fromJavaVersion().classpathFromResources(context, "azure-ai-translation-text-1.0.0-beta.1.jar"))
-                        .contextSensitive()
-                        .imports(fullyQualifiedExceptionName)
-                        //.imports("com.azure.ai.translation.text.models.InputTextItem")//.imports(com.azure.ai.translation.text.models)//Objects.requireNonNull(method.getMethodType()).getDeclaringType().getFullyQualifiedName()
-                        //.imports("com.azure.ai.translation.text.models.TranslatedTextItem")
-                        //.imports("java.util.Arrays")
-                        .build();
+            /**
+             * Recipe will first attempt to use the JavaParser to generate the new elements needed.
+             * This implementation is not completely portable. It would need an option to declare the
+             * jar and get the relevant imports at runtime.
+             * Note:
+             * JavaParser may not be able to resolve azure-ai-translation-text-1.0.0-beta.1.jar and be unable
+             * to parse azure-ai-translation-text elements.
+             * The parser implementation below is based on openRewrite suggestions and works for the core-1.0.0-beta.1.jar
+             * in META-INF/rewrite/classpath but not for azure-ai-translation-text-1.0.0-beta.1.jar.
+             * As I am unable to resolve this, I have also added a Parser-free implementation that runs.
+             * May throw: java.lang.IllegalArgumentException: Could not parse as Java
+             */
 
-                // Method is a direct statement
-                if (parent == null) {
-                    body = tryCatchTemplate.apply(getCursor(), method.getCoordinates().replace(), method);
-                }
-                else if (parent instanceof J.Assignment) {
-                    J.Assignment assignment = (J.Assignment) parent;
-                    body = tryCatchTemplate.apply(getCursor(), assignment.getCoordinates().replace(), assignment);
-                }
-                else if (parent_statement instanceof J.VariableDeclarations) { // TODO parent statement not guaranteed to be top statement
-                    // The Java template is not 100% accurate at creating Assignment statements
-                    // Some manual checking and assignment may be necessary.
-                    // The Java parser is still better than creating the elements by hand.
+//            try {
+//                JavaTemplate tryCatchTemplate = JavaTemplate.builder("try{ #{any()}; } " + catchTemplateString)
+//                        .javaParser(JavaParser.fromJavaVersion().classpathFromResources(context, "azure-ai-translation-text-1.0.0-beta.1.jar"))
+//                        .contextSensitive()
+//                        .imports(fullyQualifiedExceptionName)
+//                        .imports("com.azure.ai.translation.text.models.InputTextItem")
+//                        .imports("com.azure.ai.translation.text.models.TranslatedTextItem")
+//                        .imports("java.util.Arrays")
+//                        .build();
+//
+//                // Method is a direct statement
+//                if (parent == null) {
+//                    body = tryCatchTemplate.apply(getCursor(), method.getCoordinates().replace(), method);
+//                }
+//                else if (parent instanceof J.Assignment) {
+//                    J.Assignment assignment = (J.Assignment) parent;
+//                    body = tryCatchTemplate.apply(getCursor(), assignment.getCoordinates().replace(), assignment);
+//                }
+//                else if (parent_statement instanceof J.VariableDeclarations) {
+//                    // The Java template is not 100% accurate at creating Assignment statements
+//                    // Some manual checking and assignment may be necessary.
+//                    // The Java parser is still better than creating the elements by hand.
+//
+//                    J.VariableDeclarations parent_vd = (J.VariableDeclarations) parent_statement;
+//
+//                    int parent_index = body.getStatements().indexOf(parent_vd);
+//
+//                    if (((J.VariableDeclarations) parent_statement).getVariables().size() != 1) {
+//                        // Recipe can only handle a variable declaration with a single named variable at this time
+//                        return body;
+//                    }
+//
+//                    // Extract the correctly compiled components from the original code
+//                    // The named variable that looks like the new assignment we will create
+//                    // E.g. from J.VariableDeclarations: "int a = num.getMyInt()" named variable is "a = num.getMyInt()"
+//                    J.VariableDeclarations.NamedVariable namedVariable = ((J.VariableDeclarations) parent_statement).getVariables().get(0);
+//
+//                    // equivalent to "num.getMyInt()"
+//                    Expression good_expression = namedVariable.getInitializer();
+//
+//                    // Apply a template to split the variable assignment into:
+//                    // int a = null;
+//                    // a = num.getMyInt()
+//                    // Note: the second expression may have missing components.
+//                    JavaTemplate template1 = JavaTemplate.builder(
+//                                    body.getStatements().get(parent_index) + " = null;" + namedVariable)
+//                            .javaParser(JavaParser.fromJavaVersion().classpathFromResources(context, "azure-ai-translation-text-1.0.0-beta.1.jar"))
+//                            .contextSensitive()
+//                            .imports("com.azure.ai.translation.text.models.InputTextItem")
+//                            .imports("com.azure.ai.translation.text.models.TranslatedTextItem")
+//                            .build();
+//
+//                    J.Block oldBody = body;
+//                    body = template1.apply(updateCursor(body), parent_statement.getCoordinates().replace());
+//
+//                    if (body.getStatements().size() == oldBody.getStatements().size() + 1) {
+//
+//                        // Check if the Created assignment matches the working assignment
+//                        J.Assignment assignment = (J.Assignment) body.getStatements().get(parent_index + 1);
+//                        Expression template_expression = assignment.getAssignment();
+//
+//                        if (good_expression != null && template_expression != good_expression) {
+//                            // If the new expression is faulty, replace the templated expression with the original one
+//                            assignment = assignment.withAssignment(good_expression);
+//                        }
+//                        // Add the try block where the templated expression was
+//                        body = tryCatchTemplate.apply(updateCursor(body), assignment.getCoordinates().replace(), assignment);
+//                    }
+//                } // end else if (parent_statement instanceof J.VariableDeclarations)
+//                else {
+//                    System.out.println("unhandled method use");
+//                }
+//                    // Add the import if needed
+//                maybeAddImport(fullyQualifiedExceptionName,false);
+//                // return the transformed body
+//                // System.out.println("Java Parser Successful");
+//                return body;
+//
+//            } catch (Exception ignored) {
+//               // System.out.println("COULD NOT PARSE");
+//            }
 
-                    J.VariableDeclarations parent_vd = (J.VariableDeclarations) parent_statement;
+            /**
+             * Parser-free implementation:
+             * If the parser was not successful, parser cannot be used anywhere that the unresolvable types are
+             * present. All components must be manually created and placed.
+             * This is NOT recommended by Open Rewrite.
+             * This version creates a template for the try-catch block with dummy statements that
+             * are correctly formed. These are then altered or copied from to create elements that the parser
+             * cannot resolve.
+             */
 
-                    int parent_index = body.getStatements().indexOf(parent_vd);
-
-                    if (((J.VariableDeclarations) parent_statement).getVariables().size() != 1) {
-                        // Recipe can only handle a variable declaration with a single named variable at this time
-                        return body;
-                    }
-
-                    // Extract the correctly compiled components from the original code
-                    // The named variable that looks like the new assignment we will create
-                    // E.g. from J.VariableDeclarations: "int a = num.getMyInt()" named variable is "a = num.getMyInt()"
-                    J.VariableDeclarations.NamedVariable namedVariable = ((J.VariableDeclarations) parent_statement).getVariables().get(0);
-
-                    // equivalent to "num.getMyInt()"
-                    Expression good_expression = namedVariable.getInitializer();
-
-                    // Apply a template to split the variable assignment into:
-                    // int a = null;
-                    // a = num.getMyInt()
-                    // Note: the second expression may have missing components.
-                    JavaTemplate template1 = JavaTemplate.builder(
-                                    body.getStatements().get(parent_index) + " = null;" + namedVariable)
-                            //.javaParser(JavaParser.fromJavaVersion().classpathFromResources(context, "azure-ai-translation-text-1.0.0-beta.1.jar"))
-                            .contextSensitive()
-                            //.imports("com.azure.ai.translation.text.models.InputTextItem")
-                            //.imports("com.azure.ai.translation.text.models.TranslatedTextItem")
-                            // For now manually add imports and resource files
-                            .build();
-
-                    J.Block oldBody = body;
-                    body = template1.apply(updateCursor(body), parent_statement.getCoordinates().replace());
-
-                    if (body.getStatements().size() == oldBody.getStatements().size() + 1) {
-
-                        // Check if the Created assignment matches the working assignment
-                        J.Assignment assignment = (J.Assignment) body.getStatements().get(parent_index + 1);
-                        Expression template_expression = assignment.getAssignment();
-
-                        if (good_expression != null && template_expression != good_expression) {
-                            // If the new expression is faulty, replace the templated expression with the original one
-                            assignment = assignment.withAssignment(good_expression);
-                        }
-                        // Add the try block where the templated expression was
-                        body = tryCatchTemplate.apply(updateCursor(body), assignment.getCoordinates().replace(), assignment);
-                    }
-                } // end else if (parent_statement instanceof J.VariableDeclarations)
-                else {
-                    System.out.println("unhandled method use");
-                }
-                    // Add the import if needed
-                maybeAddImport(fullyQualifiedExceptionName,false);
-                // return the transformed body
-                System.out.println("Java Parser Successful");
-                return body;
-
-            } catch (Exception ignored) {
-                System.out.println("COULD NOT PARSE");
-            }
-
-            // If the parser was not successful, components must be manually created.
-            // This can lead to formatting issues, is not as flexible, and is more error-prone.
-
-            // Create a template for the try-catch block with dummy Tree elements to copy.
-            // These will hopefully give us correct not tree elements to copy from the context.
-            // "int a = null; try { a = 3; } "
             JavaTemplate tryCatchTemplate = JavaTemplate.builder("try { int a = null; a = 3; } " + catchTemplateString)
                     .imports(fullyQualifiedExceptionName)
                     .build();
 
             // Create an empty block to apply the try-catch template based off the cursor values from the main body
+            // This should create the correct formatting.
             J.Block b = J.Block.createEmptyBlock();
             b = tryCatchTemplate.apply(new Cursor(getCursor(),b), b.getCoordinates().firstStatement());
-            //System.out.println("b.statements: " + b.getStatements());
+            int parent_index;
 
-            // Get the created try-catch block
+            // Extract the try-catch block and dummy elements
             J.Try _try = (J.Try) b.getStatements().get(0);
-            //System.out.println("catches: " + _try.getCatches());
-
-            // Extract the generated dummy elements
             J.VariableDeclarations dummy_varDec = (J.VariableDeclarations) _try.getBody().getStatements().get(0);
-            J.Assignment dummy_Assign = (J.Assignment) _try.getBody().getStatements().get(1);
+            J.Assignment dummy_assignment = (J.Assignment) _try.getBody().getStatements().get(1);
 
+            if (_try.getCatches().isEmpty()) {
+                // The catch template was incorrect, recipe is unsafe.
+                return body;
+            }
+            // The original list of statements to alter
             List<Statement> body_statements = body.getStatements();
-            System.out.println("body_statements: " + body_statements);
 
-            // Method is a direct statement
+            // Method is the first element on its line.
             if (parent == null) {
+                // Cast method as a statement and update the indentation (prefix)
 
-                Statement method_statement = (Statement) method.withPrefix(dummy_varDec.getPrefix());
-                System.out.println("method: "+ method );
-                System.out.println("method_statement: " + method_statement);
-                int parent_index = body.getStatements().indexOf(method_statement);
-                System.out.println("body_statements: " + body_statements);
-                System.out.println("parent_index: " + parent_index);
+                Statement method_statement = method.withPrefix(dummy_varDec.getPrefix());
+                parent_index = body.getStatements().indexOf(method_statement);
+                // Make it the only statement in the try block
                 _try = _try.withBody(_try.getBody().withStatements(ListUtils.insert(
                         new ArrayList<>(), method_statement, 0 )));
 
+                // Update the statements
                 body_statements.set(parent_index, _try);
             }
             else if (parent instanceof J.Assignment) {
-                J.Assignment assignment = (J.Assignment) ((J.Assignment) parent).withPrefix(dummy_Assign.getPrefix());
-                _try = _try.withBody(_try.getBody().withStatements(ListUtils.insert(
-                        new ArrayList<>(), assignment, 0 )));
+                parent_index = body.getStatements().indexOf(parent);
+                J.Assignment new_assignment = ((J.Assignment) parent).withPrefix(dummy_assignment.getPrefix());
 
-                int parent_index = body.getStatements().indexOf(parent);
+                _try = _try.withBody(_try.getBody().withStatements(ListUtils.insert(
+                        new ArrayList<>(), new_assignment, 0 )));
+
                 body_statements.set(parent_index, _try);
-                System.out.println("assignment: " + assignment);
-                // TODO
             }
-            else if (parent_statement instanceof J.VariableDeclarations) { // TODO parent statement not guaranteed to be top statement
+            else if (parent_statement instanceof J.VariableDeclarations) {
 
                 J.VariableDeclarations parent_vd = (J.VariableDeclarations) parent_statement;
+                parent_index = body.getStatements().indexOf(parent_vd);
 
-                //System.out.println("parent_vd: " + parent_vd);
-                // parent_vd: List<TranslatedTextItem> result = textTranslationClient.translate(Arrays.asList("es"), inputTextItems)
-
-                // Get the index of the statement containing the method.
-                int parent_index = body.getStatements().indexOf(parent_vd); // 2
-                //System.out.println("parent_index: " + parent_index);
-
-                if (((J.VariableDeclarations) parent_statement).getVariables().size() != 1) {
+                if (parent_vd.getVariables().size() != 1) {
                     // Recipe can only handle a variable declaration with a single named variable at this time
+                    // Could be changed.
                     return body;
                 }
 
-                J.VariableDeclarations.NamedVariable namedVariable = ((J.VariableDeclarations) parent_statement).getVariables().get(0);
+                J.VariableDeclarations.NamedVariable namedVariable = parent_vd.getVariables().get(0);
+                Expression expression = namedVariable.getInitializer();
 
-                Expression good_expression = namedVariable.getInitializer(); // result
+                assert expression != null;
+                // Repurpose the dummy_assignment variable
+                dummy_assignment = dummy_assignment.withVariable(namedVariable.getName().unwrap());
+                dummy_assignment = dummy_assignment.withAssignment(expression);
 
-                //System.out.println("namedVar as expression:" + namedVariable.getName().unwrap());
-
-
-
-
-                assert good_expression != null;
-                // Repurpose the dummy variable
-                dummy_Assign = dummy_Assign.withVariable(namedVariable.getName().unwrap());
-                dummy_Assign = dummy_Assign.withAssignment(good_expression);
-
-
-//                Statement s = assignment;
-                Statement s = dummy_Assign;
-                System.out.println("s: " + s);
                 _try = _try.withBody(_try.getBody().withStatements(ListUtils.insert(
-                       new ArrayList<>(), s, 0 )));
+                       new ArrayList<>(), dummy_assignment, 0 )));
 
-
-
-
+                // Make the original declaration initialise with '= null'
                 namedVariable = namedVariable.withInitializer(dummy_varDec.getVariables().get(0).getInitializer());
-                //parent_vd = parent_vd.withVariables(ListUtils.insert(parent_vd.getVariables(), namedVariable, 0));
-                //parent_vd
-                List<J.VariableDeclarations.NamedVariable> ls = parent_vd.getVariables();
-                ls.set(0, namedVariable);
-                parent_vd = parent_vd.withVariables(ls); // parent_vd: List<TranslatedTextItem> result = null
-                //parent_vd.getVariables().remove(1);
-                System.out.println("parent_vd: " + parent_vd);
-                System.out.println("parent_vd.getVariables(): " + parent_vd.getVariables());
-                //statements.add();
 
+                parent_vd = parent_vd.withVariables(ListUtils.insert(
+                        new ArrayList<>(), namedVariable, 0 ));
 
-                namedVariable = namedVariable.withInitializer(dummy_varDec.getVariables().get(0).getInitializer());
-                System.out.println("namedVariable: " + namedVariable);
-                List<J.VariableDeclarations.NamedVariable> variableList = new ArrayList<>();
-                variableList.add(namedVariable);
-                System.out.println("variableList: " + variableList);
-
-
-
-                body_statements.set(parent_index, parent_vd); // Works
+                // Replace the old VariableDeclarations
+                body_statements.set(parent_index, parent_vd);
+                // Add the try below it
                 body_statements.add(parent_index +1, _try);
 
-
-
-                System.out.println("final body: "+ body.getStatements());
-                //body = body.withStatements()
             }
             else {
+                // A case I haven't thought of yet
                 System.out.println("unhandled method use");
             }
 
+            // Update the body block with the new set of statements and return.
             body = body.withStatements(body_statements);
             // Add the import if needed
             maybeAddImport(fullyQualifiedExceptionName,false);
@@ -380,8 +361,6 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
             }
 
             return visitSuper.get();
-            // Remove the method call.
-            //return null;
         }
 
         /**
@@ -406,14 +385,3 @@ public class AddTryCatchToMethodCallRecipe extends Recipe {
     } // end catchUncheckedVisitor
 
 }
-
-// Create a new Assignment from the two;
-//                J.Assignment assignment = new J.Assignment(
-//
-//                        Tree.randomId(),
-//                        dummy_Assign.getPrefix(),
-//                        dummy_Assign.getMarkers(),
-//                        namedVariable.getName().unwrap(),
-//                        dummy_Assign.getPadding().getAssignment().withElement(good_expression),
-//                        //JLeftPadded.build(good_expression),
-//                        namedVariable.getType());

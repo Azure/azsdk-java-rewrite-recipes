@@ -24,10 +24,6 @@ public class AddTryCatchToMethodCallTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipeFromResource("/META-INF/rewrite/rewrite.yml",
                 "com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2");
-
-//        spec.recipe(new AddTryCatchToMethodCallRecipe("com.azure.ai.translation.text.TextTranslationClient translate(..)",
-//                "catch (IOException e) { throw new RuntimeException(e); }",
-//                "java.io.IOException"));
     }
 
     @Test
@@ -75,6 +71,10 @@ public class AddTryCatchToMethodCallTest implements RewriteTest {
         );
     }
 
+    /**
+     * Binary data is not currently contains missing or malformed elements. This test will always fail until
+     * this is resolved.
+     */
     @Disabled
     @Test
     void test_textTranslationClient_translateWithResponse() {

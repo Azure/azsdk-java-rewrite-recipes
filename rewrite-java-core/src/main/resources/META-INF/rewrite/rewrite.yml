@@ -196,9 +196,37 @@ recipeList:
       oldFullyQualifiedTypeName: com.azure.core.util.Configuration
       newFullyQualifiedTypeName: io.clientcore.core.util.configuration.Configuration
 
+  # v2 BinaryData.toObject throws an IOException. This recipe encloses all calls in
+  # a try-catch block.
+  # Before:
+  # List<TranslatedTextItem> result = binaryDataResponse.getValue().toObject( /* Any Args */);
+  # After:
+  # List<TranslatedTextItem> result = null;
+  # try {
+  #     result = binaryDataResponse.getValue().toObject( /* Any Args */);
+  # } catch (IOException e) {
+  #     e.printStackTrace();
+  # }
+  # WARNING: This recipe MUST be run before com.azure.recipes.core.v2.TypeReferenceRecipe.
   - com.azure.recipes.core.v2.AddTryCatchToMethodCallRecipe:
       methodPattern: com.azure.core.util.BinaryData toObject(..)
       catchTemplateString: catch (IOException e) { e.printStackTrace(); }
+      fullyQualifiedExceptionName: java.io.IOException
+
+  # v2 TextTranslationClient.translate throws an IOException. This recipe encloses all calls in
+  # a try-catch block.
+  # Before:
+  # List<TranslatedTextItem> result = textTranslationClient.translate( /* Any Args */);
+  # After:
+  # List<TranslatedTextItem> result = null;
+  # try {
+  #     result = textTranslationClient.translate( /* Any Args */);
+  # } catch (IOException e) {
+  #     throw new RuntimeException(e);
+  # }
+  - com.azure.recipes.core.v2.AddTryCatchToMethodCallRecipe:
+      methodPattern: com.azure.ai.translation.text.TextTranslationClient translate(..)
+      catchTemplateString: catch (IOException e) { throw new RuntimeException(e); }
       fullyQualifiedExceptionName: java.io.IOException
 
   - com.azure.recipes.core.v2.ContextRecipe
@@ -221,9 +249,3 @@ recipeList:
       find: '(?<!\.)[\w]*[\s]*HttpLogDetailLevel'
       replace: 'HttpLogOptions.HttpLogDetailLevel'
       regex: true
-
-  - com.azure.recipes.core.v2.AddTryCatchToMethodCallRecipe:
-      methodPattern: com.azure.ai.translation.text.TextTranslationClient translate(..)
-      catchTemplateString: catch (IOException e) { throw new RuntimeException(e); }
-      fullyQualifiedExceptionName: java.io.IOException
-
