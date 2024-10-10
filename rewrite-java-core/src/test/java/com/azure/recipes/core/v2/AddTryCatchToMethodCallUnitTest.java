@@ -24,15 +24,15 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipes(new AddTryCatchToMethodCallRecipe("UserClass myMethod(..)",
                 "catch (IOException e) { e.printStackTrace(); }",
-                "java.io.IOException"),
+                "java.io.IOException",false),
                 new AddTryCatchToMethodCallRecipe("CatchAndThrow myMethod(..)",
                         "catch (IOException e) { throw new RuntimeException(e); }",
-                        "java.io.IOException")
+                        "java.io.IOException",false)
         );
     }
 
     @Test
-    void test_addTryCatch_voidMethod() {
+    void testAddTryCatchVoidMethod() {
         @Language("java") String before =
                 "public class UserClass {\n" +
                 "    \n" +
@@ -72,7 +72,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
     }
 
     @Test
-    void test_addTryCatch_methodInVarDeclaration() {
+    void testAddTryCatchMethodInVarDeclaration() {
         @Language("java") String before =
                 "public class UserClass {\n" +
                 "    \n" +
@@ -109,7 +109,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
     }
 
     @Test
-    void test_addTryCatch_methodInAssignment() {
+    void testAddTryCatchMethodInAssignment() {
         @Language("java") String before =
                 "public class UserClass {\n" +
                 "    \n" +
@@ -149,7 +149,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
     }
 
     @Test
-    void test_addTryCatch_methodIsFromInstance() {
+    void testAddTryCatchMethodIsFromInstance() {
         @Language("java") String before =
                 "public class UserClass {\n" +
                 "    public UserClass(){}\n" +
@@ -198,7 +198,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
     }
 
     @Test
-    void test_addTryCatch_methodIsInNestedCall() {
+    void testAddTryCatchMethodIsInNestedCall() {
         @Language("java") String before =
                 "public class CatchAndThrow {\n" +
                 "    public CatchAndThrow(){}\n" +
@@ -251,7 +251,7 @@ public class AddTryCatchToMethodCallUnitTest implements RewriteTest {
         );
     }
     @Test
-    void test_addTryCatch_catchTrows() {
+    void testAddTryCatchThrows() {
         @Language("java") String before =
                 "public class CatchAndThrow {\n" +
                         "    \n" +

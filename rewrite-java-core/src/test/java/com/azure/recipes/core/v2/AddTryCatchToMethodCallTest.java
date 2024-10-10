@@ -1,10 +1,10 @@
 package com.azure.recipes.core.v2;
 
 import org.intellij.lang.annotations.Language;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
+import org.openrewrite.test.TypeValidation;
 
 import static org.openrewrite.java.Assertions.java;
 
@@ -27,7 +27,7 @@ public class AddTryCatchToMethodCallTest implements RewriteTest {
     }
 
     @Test
-    void test_textTranslationClient_translate() {
+    void testTextTranslationClientTranslate() {
         @Language("java") String before = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
                 "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
                 "import com.azure.ai.translation.text.models.InputTextItem;\n" +
@@ -71,13 +71,8 @@ public class AddTryCatchToMethodCallTest implements RewriteTest {
         );
     }
 
-    /**
-     * Binary data is not currently contains missing or malformed elements. This test will always fail until
-     * this is resolved.
-     */
-    @Disabled
     @Test
-    void test_textTranslationClient_translateWithResponse() {
+    void testTextTranslationClientTranslateWithResponse() {
         @Language("java") String before = "import com.azure.ai.translation.text.TextTranslationClient;\n" +
                 "import com.azure.ai.translation.text.TextTranslationClientBuilder;\n" +
                 "import com.azure.ai.translation.text.models.InputTextItem;\n" +
@@ -155,6 +150,7 @@ public class AddTryCatchToMethodCallTest implements RewriteTest {
                 "}";
 
         rewriteRun(
+                spec -> spec.typeValidationOptions(TypeValidation.none()),
                 java(before,after)
         );
     }
