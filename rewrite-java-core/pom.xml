@@ -96,11 +96,29 @@
             <version>2.15.0</version>
         </dependency>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.34</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-ai-translation-text</artifactId>
             <version>1.0.0-beta.1</version>
             <scope>test</scope>
         </dependency>
+
+
+        <!-- Alternatively, use this project version -->
+        <!--
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-ai-translation-text-v1</artifactId>
+            <version>1.0.0-beta.1</version>
+            <scope>test</scope>
+        </dependency>
+        -->
     </dependencies>
 
     <build>
