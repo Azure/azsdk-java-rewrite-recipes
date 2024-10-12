@@ -8,13 +8,15 @@ import org.openrewrite.internal.ListUtils;
 import org.openrewrite.internal.lang.NonNull;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaIsoVisitor;
-import org.openrewrite.java.JavaParser;
 import org.openrewrite.java.JavaTemplate;
 import org.openrewrite.java.MethodMatcher;
-import org.openrewrite.java.tree.*;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import org.openrewrite.java.tree.Expression;
+import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.MethodCall;
+import org.openrewrite.java.tree.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
