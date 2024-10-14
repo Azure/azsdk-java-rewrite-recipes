@@ -58,10 +58,9 @@ public class ResponseTest implements RewriteTest {
         before += "\n  }";
         before += "\n}";
 
-        @Language("java") String after = "import io.clientcore.core.http.models.Response;\n\n";
-        after += "public class Testing {";
+        @Language("java") String after = "public class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    io.clientcore.core.http.models.Response<String> str = null;";
+        after += "\n     io.clientcore.core.http.models.Response<String> str = null;";
         after += "\n  }";
         after += "\n}";
         rewriteRun(
