@@ -14,11 +14,13 @@ import org.openrewrite.java.tree.TypeTree;
  * --------------------------------------------------
  * Before applying this recipe:
  * import com.azure.core.util.Context;
+ * com.azure.core.http.rest.RequestOptions;
  * ...
  * public void context(){ print(Context.NONE); }
  * --------------------------------------------------
  * After applying this recipe:
  * import io.clientcore.core.util.Context;
+ * io.clientcore.core.http.models.RequestOptions
  * ...
  * public void context(){ print(Context.none()); }
  * --------------------------------------------------
@@ -61,8 +63,11 @@ public class ContextRecipe extends Recipe {
         public J.@NotNull FieldAccess visitFieldAccess(J.@NotNull FieldAccess fieldAccess, @NotNull ExecutionContext ctx) {
             J.FieldAccess visitedFieldAccess = super.visitFieldAccess(fieldAccess, ctx);
             String fullyQualified = visitedFieldAccess.getTarget() + "." + visitedFieldAccess.getSimpleName();
+            if (fullyQualified.equals("com.azure.core.http.rest.RequestOptions")) {
+                return TypeTree.build(" io.clientcore.core.http.models.RequestOptions");
+            }
             if (fullyQualified.equals("com.azure.core.util.Context")) {
-               return TypeTree.build(" io.clientcore.core.util.Context");
+                return TypeTree.build(" io.clientcore.core.util.Context");
             }
             if (fullyQualified.equals("Context.NONE")){
                 return TypeTree.build("Context.none()");

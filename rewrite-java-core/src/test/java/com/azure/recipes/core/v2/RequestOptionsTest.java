@@ -37,7 +37,7 @@ public class RequestOptionsTest implements RewriteTest {
         before += "\n}";
 
         @Language("java") String after = "import io.clientcore.core.http.models.RequestOptions;";
-        after += "\n\npublic class Testing {";
+        after += "\npublic class Testing {";
         after += "\n  public Testing(){";
         after += "\n    RequestOptions r = new RequestOptions();";
         after += "\n  }";
@@ -60,7 +60,7 @@ public class RequestOptionsTest implements RewriteTest {
 
         @Language("java") String after = "public class Testing {";
         after += "\n  public Testing(){";
-        after += "\n    io.clientcore.core.http.models.RequestOptions r = new io.clientcore.core.http.models.RequestOptions();";
+        after += "\n     io.clientcore.core.http.models.RequestOptions r = new io.clientcore.core.http.models.RequestOptions();";
         after += "\n  }";
         after += "\n}";
         rewriteRun(
