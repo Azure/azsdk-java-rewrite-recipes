@@ -2,7 +2,6 @@ package com.azure.recipes.core.v2;
 
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
-import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 import org.openrewrite.test.TypeValidation;
@@ -46,7 +45,7 @@ public class TypeReferenceTest implements RewriteTest {
 
         @Language("java") String after = "import java.lang.reflect.ParameterizedType;\n" +
                 "import java.lang.reflect.Type;\n" +
-                "import java.util.List;\n"+
+                "import java.util.List;\n\n"+
                 "public class Testing {\n" +
                 "  private static final Type TESTING_TYPE = new ParameterizedType() {\n" +
                 "      @Override\n" +
@@ -65,8 +64,7 @@ public class TypeReferenceTest implements RewriteTest {
                 "}\n";
 
         rewriteRun(
-                spec -> spec.cycles(2)
-                        .expectedCyclesThatMakeChanges(2),
+
                 java(before,after)
         );
     }
@@ -88,7 +86,7 @@ public class TypeReferenceTest implements RewriteTest {
 
         @Language("java") String after = "import java.lang.reflect.ParameterizedType;\n" +
                 "import java.lang.reflect.Type;\n" +
-                "import java.util.Map;\n" +
+                "import java.util.Map;\n\n" +
                 "public class Testing {\n" +
                 "  private static final Type TESTING_TYPE = new ParameterizedType() {\n" +
                 "      @Override\n" +
@@ -107,8 +105,6 @@ public class TypeReferenceTest implements RewriteTest {
                 "}\n";
 
         rewriteRun(
-                spec -> spec.cycles(2)
-                        .expectedCyclesThatMakeChanges(2),
                 java(before,after)
         );
     }
@@ -128,7 +124,7 @@ public class TypeReferenceTest implements RewriteTest {
 
 
         @Language("java") String after = "import java.lang.reflect.ParameterizedType;\n" +
-                "import java.lang.reflect.Type;\n" +
+                "import java.lang.reflect.Type;\n\n" +
                 "public class Testing {\n" +
                 "  private static final Type TESTING_TYPE = new ParameterizedType() {\n" +
                 "      @Override\n" +
@@ -147,8 +143,6 @@ public class TypeReferenceTest implements RewriteTest {
                 "}\n";
 
         rewriteRun(
-                spec -> spec.cycles(2)
-                        .expectedCyclesThatMakeChanges(2),
                 java(before,after)
         );
     }

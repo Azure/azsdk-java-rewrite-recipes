@@ -28,6 +28,10 @@
                     <activeRecipes>
                         <recipe>com.azure.rewrite.java.core.MigrateAzureCoreSamplesToAzureCoreV2</recipe>
                     </activeRecipes>
+                    <exclusions>
+                        <exclude>rewrite-sample/azure-ai-translation-text-v1/src/main/**</exclude>
+                        <exclude>rewrite-sample/azure-ai-translation-text-v2/**</exclude>
+                    </exclusions>
                 </configuration>
                 <dependencies>
                     <dependency>
